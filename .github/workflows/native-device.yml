@@ -108,6 +108,7 @@ jobs:
         run: |
           UDID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
           echo "Simulator: $UDID"
+          echo "SIMULATOR_UDID=$UDID" >> "$GITHUB_ENV"
           xcrun simctl boot "$UDID"
           xcrun simctl bootstatus "$UDID" -b
           xcrun simctl install "$UDID" e2e-app/ios/build/Build/Products/Release-iphonesimulator/RlmE2E.app
@@ -116,7 +117,10 @@ jobs:
           curl -fsSL https://get.maestro.mobile.dev | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
       - name: Run the flows on the iOS simulator
-        run: maestro test e2e-app/maestro --format junit --output maestro-ios.xml --test-output-dir maestro-ios
+        env:
+          # Maestro's XCTest driver takes longer than the default to start on a fresh CI simulator.
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 240000
+        run: maestro --device "$SIMULATOR_UDID" test e2e-app/maestro --format junit --output maestro-ios.xml --test-output-dir maestro-ios
       - if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

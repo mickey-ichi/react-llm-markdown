@@ -37,7 +37,7 @@ npx playwright install chromium   # once, for the end-to-end tests
 | `src/web/` | `MarkdownView` on Streamdown, the rehype URL policy, `styles.css` source |
 | `src/native/` | React Native renderer, Shiki highlighter, WebView documents |
 | `src/cli.ts`, `src/viewer/` | The `.md` viewer server and its page |
-| `e2e-app/` | Expo app the React Native e2e tests drive |
+| `e2e-app/` | Expo app the React Native e2e tests drive (in Chromium, and on iOS and Android with the Maestro flows in `e2e-app/maestro/`) |
 | `examples/` | Next.js and React Native (Expo) example apps |
 | `site/` | Playground and documentation (GitHub Pages) |
 | `e2e/cases.ts` | Attack payloads and performance cases shared by every e2e suite |
@@ -50,6 +50,10 @@ npx playwright install chromium   # once, for the end-to-end tests
   test in `test/security.test.ts` and an e2e payload in `e2e/cases.ts`.
 - Update the docs (`README.md`, `site/docs/`, `docs/`) and `CHANGELOG.md` when users would notice the change.
 - CI must be green: build, type check and unit tests on Linux, macOS and Windows, plus the e2e suite.
+  Changes to `src/native/`, `src/core/` or `e2e-app/` also run the Maestro flows on an iOS simulator and an Android
+  emulator (`.github/workflows/native-device.yml`). To run them yourself: `node scripts/build-example.mjs --no-web`,
+  `cd e2e-app && npx expo run:ios --configuration Release` (or `run:android --variant release`), then
+  `maestro test e2e-app/maestro`.
 
 ## Releasing (maintainers)
 

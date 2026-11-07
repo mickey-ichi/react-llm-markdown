@@ -13,6 +13,11 @@
   both streaming an answer; CI builds them against the packed package. The e2e test app moved from `example/` to
   `e2e-app/`.
 - The "tested with 27 attack payloads" claims link to the test report.
+- The React Native renderer is tested on an iOS simulator and an Android emulator: the test app is built as a release
+  app and driven with [Maestro](https://maestro.dev) flows (native views, Copy, WebView math and Mermaid, streaming,
+  dark theme).
+- Docs: a [comparison](https://mickey-ichi.github.io/react-llm-markdown/docs/comparison/) with react-markdown,
+  Streamdown and the React Native Markdown renderers.
 
 ## 0.1.1 — 2026-11-07
 
