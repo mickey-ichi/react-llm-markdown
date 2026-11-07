@@ -24,13 +24,22 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-dark.png">
-    <img alt="Web renderer: a table, highlighted code, KaTeX math, a Mermaid diagram and an ECharts chart" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="540">
+    <img alt="Web renderer: a table, highlighted code, KaTeX math, a Mermaid diagram and an ECharts chart" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="620">
   </picture>
-  &nbsp;
+</p>
+
+<p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-dark.png">
-    <img alt="React Native renderer on a phone: a table, lists and highlighted code" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-light.png" width="236">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-dark.png">
+    <img alt="An iPhone (iOS 18 simulator): highlighted code, KaTeX math, a Mermaid diagram and an ECharts chart drawn in WebViews" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-light.png" width="240">
   </picture>
+  &nbsp;&nbsp;
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-dark.png">
+    <img alt="An Android 14 emulator: headings, a table, lists, highlighted code, math and a Mermaid diagram" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-light.png" width="240">
+  </picture>
+  <br>
+  <sub>Web · iPhone (iOS 18 simulator) · Android 14 emulator — taken by the end-to-end tests</sub>
 </p>
 
 ## Why

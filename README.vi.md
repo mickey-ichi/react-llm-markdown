@@ -24,13 +24,22 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-dark.png">
-    <img alt="Renderer cho web: một bảng, code được tô màu cú pháp, công thức KaTeX, một sơ đồ Mermaid và một biểu đồ ECharts" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="540">
+    <img alt="Renderer cho web: một bảng, code được tô màu cú pháp, công thức KaTeX, một sơ đồ Mermaid và một biểu đồ ECharts" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="620">
   </picture>
-  &nbsp;
+</p>
+
+<p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-dark.png">
-    <img alt="Renderer React Native trên điện thoại: một bảng, danh sách và code được tô màu cú pháp" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-light.png" width="236">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-dark.png">
+    <img alt="iPhone (simulator iOS 18): code được tô màu cú pháp, công thức KaTeX, sơ đồ Mermaid và biểu đồ ECharts vẽ trong WebView" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-light.png" width="240">
   </picture>
+  &nbsp;&nbsp;
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-dark.png">
+    <img alt="Emulator Android 14: tiêu đề, bảng, danh sách, code được tô màu cú pháp, công thức và sơ đồ Mermaid" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-light.png" width="240">
+  </picture>
+  <br>
+  <sub>Web · iPhone (simulator iOS 18) · emulator Android 14 — ảnh chụp từ các bài kiểm thử end-to-end</sub>
 </p>
 
 ## Tại sao

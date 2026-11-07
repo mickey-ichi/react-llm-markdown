@@ -67,13 +67,16 @@ jobs:
             adb shell settings put global hide_error_dialogs 1
             adb shell settings put global anr_show_background 0
             adb install e2e-app/android/app/build/outputs/apk/release/app-release.apk
-            maestro test e2e-app/maestro --format junit --output maestro-android.xml --test-output-dir maestro-android
+            # The CI emulator's Google Play services sometimes die mid-run and take the app with them (WebView uses
+            # their font provider); one retry tells that apart from a real failure.
+            maestro test e2e-app/maestro --format junit --output maestro-android.xml --test-output-dir maestro-android || maestro test e2e-app/maestro --format junit --output maestro-android.xml --test-output-dir maestro-android-retry
       - if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: maestro-android
           path: |
             maestro-android/
+            maestro-android-retry/
             maestro-android.xml
           if-no-files-found: ignore
 
