@@ -68,6 +68,11 @@ export interface MarkdownViewProps {
   onLinkPress?: (url: string) => boolean | void;
   /** Shows a "Copy" button on code blocks and calls this with the code. */
   onCopyCode?: (code: string) => void;
+  /**
+   * Which images may load (after `baseUrl` resolution). Default: every http(s) image. A refused image shows its alt
+   * text and is never requested, e.g. `(url) => url.startsWith('https://cdn.example.com/')`.
+   */
+  isImageAllowed?: (url: string) => boolean;
   /** Custom code highlighter, or `false` for plain code. Default: Shiki with a few common languages. */
   highlighter?: CodeHighlighter | false;
   style?: ViewStyle;
@@ -81,12 +86,45 @@ let defaultHighlighter: CodeHighlighter | undefined;
 export function resolveUrl(url: string, baseUrl?: string): string | null {
   if (OPENABLE.test(url)) return url;
   if (!baseUrl || url.startsWith('#')) return null;
-  try {
-    const resolved = new URL(url, baseUrl).toString();
-    return OPENABLE.test(resolved) ? resolved : null;
-  } catch {
-    return null;
+  const resolved = joinUrl(baseUrl, url);
+  return resolved && OPENABLE.test(resolved) ? resolved : null;
+}
+
+/** Removes `.` and `..` segments from a URL path (RFC 3986, 5.2.4). */
+function removeDotSegments(path: string): string {
+  const out: string[] = [];
+  for (const segment of path.split('/')) {
+    if (segment === '..') {
+      if (out.length > 1) out.pop();
+    } else if (segment !== '.') out.push(segment);
   }
+  const last = path.split('/').at(-1);
+  if (last === '.' || last === '..') out.push('');
+  return out.join('/');
+}
+
+/**
+ * Resolves a relative reference against an absolute http(s) base (RFC 3986, 5.2). React Native's `URL` cannot: it
+ * only concatenates, giving `https://s/docs/a.md/../img.png` for `../img.png`.
+ */
+export function joinUrl(base: string, reference: string): string | null {
+  const match = /^(https?:)\/\/([^/?#]+)([^?#]*)(\?[^#]*)?/i.exec(base);
+  if (!match) return null;
+  const [, scheme, authority, basePath = '', baseQuery = ''] = match;
+  const origin = `${scheme!.toLowerCase()}//${authority}`;
+  const [, refPath = '', refQuery, refFragment] = /^([^?#]*)(\?[^#]*)?(#.*)?$/.exec(reference) ?? [];
+  let path: string;
+  let query: string;
+  if (refPath === '') {
+    path = basePath || '/';
+    query = refQuery ?? baseQuery;
+  } else {
+    const merged = refPath.startsWith('/') ? refPath : `${basePath.slice(0, basePath.lastIndexOf('/') + 1) || '/'}${refPath}`;
+    path = removeDotSegments(merged);
+    if (!path.startsWith('/')) path = `/${path}`;
+    query = refQuery ?? '';
+  }
+  return `${origin}${path}${query}${refFragment ?? ''}`;
 }
 
 /** Removes tags (and script / style contents) from raw HTML, for showing its text only. */
@@ -296,7 +334,9 @@ function renderCode(node: Code, ctx: Context, key: string): ReactNode {
   const lang = (node.lang ?? '').toLowerCase();
   const feature = (name: keyof NativeFeatures) => props.features?.[name] !== false;
   const WebView = props.webView;
-  if (WebView && feature('mermaid') && lang === 'mermaid') {
+  // While streaming, a diagram is unfinished: show its source until the answer is complete, instead of reloading a
+  // WebView on every chunk.
+  if (WebView && feature('mermaid') && lang === 'mermaid' && !props.streaming) {
     return (
       <CodeCard code={node.value} ctx={ctx} key={key} label="Mermaid">
         <RichBlock html={mermaidHtml(node.value, theme, scheme === 'dark', props.scripts?.mermaid)} minHeight={80} webView={WebView} />
@@ -401,7 +441,14 @@ function renderBlock(node: RootContent, ctx: Context, index: number, tight = fal
         const url =
           only.type === 'image' ? only.url : (ctx.definitions.get(only.identifier.toLowerCase())?.url ?? '');
         const uri = resolveUrl(url, props.baseUrl);
-        if (uri) return <AutoImage alt={only.alt ?? ''} key={key} uri={uri} />;
+        if (uri && (!props.isImageAllowed || props.isImageAllowed(uri))) {
+          return <AutoImage alt={only.alt ?? ''} key={key} uri={uri} />;
+        }
+        return (
+          <Text key={key} style={[styles.text, { color: theme.mutedForeground }]}>
+            {`[${only.alt || 'image'}]`}
+          </Text>
+        );
       }
       return (
         <Text key={key} selectable style={styles.text}>

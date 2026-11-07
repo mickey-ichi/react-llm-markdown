@@ -49,6 +49,10 @@ export const SECURITY_CASES: SecurityCase[] = [
   { id: 'SEC-23', title: 'Mermaid: frontmatter config and a reassembled directive', markdown: [fence('mermaid', ['---', 'config:', '  securityLevel: loose', '---', 'flowchart LR', '  A --> B'].join('\n')), '> ' + fence('mermaid', '%%%%{x}%%{init: {"securityLevel": "loose"}}%%\nflowchart LR\n  C --> D').replace(/\n/g, '\n> ')].join('\n\n') },
   // KaTeX.
   { id: 'SEC-24', title: 'KaTeX: \\href, \\includegraphics, \\htmlClass, huge sizes and a macro bomb', markdown: ['$$\\href{javascript:window.__xss=1}{click}$$', '$$\\includegraphics{https://evil.example/k.png}$$', '$$\\htmlClass{x}{y}$$', '$$\\rule{500em}{500em}$$', '$$\\def\\a{\\b\\b}\\def\\b{\\a\\a}\\a$$'].join('\n\n'), interact: ['click-links'] },
+  // Found in the 0.1.0 review.
+  { id: 'SEC-26', title: 'HTML: an id that would shadow a global (DOM clobbering)', markdown: 'Before.\n\n<div id="__xss">clobber</div>\n\n<a id="__xss" name="__xss">x</a>\n\nAfter.' },
+  { id: 'SEC-27', title: 'URLs: backslash and tab tricks the browser reads as //host', markdown: 'Images:\n\n<img src="/\\evil.example/b.png"> <img src="/&#9;/evil.example/t.png">\n\n[link](/\\evil.example/l)' },
+  { id: 'SEC-28', title: 'ECharts: a gauge with a huge splitNumber (would freeze the page)', markdown: [chart({ series: [{ type: 'gauge', splitNumber: 100_000_000, axisTick: { splitNumber: 100_000_000 }, data: [{ value: 50 }] }] }), '', 'After the gauge.'].join('\n') },
 ];
 
 /** Content that must still render after all the hardening. */
@@ -161,4 +165,7 @@ export const EXPECTED: Record<string, string> = {
   'SEC-22': 'The directive is removed: `securityLevel: strict` and text labels stay; the label is never an element.',
   'SEC-23': 'Frontmatter config and reassembled directives are removed, also inside a quote.',
   'SEC-24': '`\\href`, `\\includegraphics`, `\\htmlClass` render as errors; sizes are capped; the macro bomb stops.',
+  'SEC-26': 'The id and name get a `user-content-` prefix, so `window.__xss` stays unset.',
+  'SEC-27': 'Refused like `//host`: no image is requested, the link is plain text.',
+  'SEC-28': '`splitNumber` is capped at 100: the gauge draws at once and the page stays responsive.',
 };

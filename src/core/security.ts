@@ -1,3 +1,5 @@
+import { rewriteOutsideCode } from './code-segments.ts';
+
 /**
  * Security defaults for rendering untrusted (LLM- or user-written) Markdown.
  *
@@ -53,30 +55,31 @@ export const KATEX_SECURITY_OPTIONS = {
  * attribute.
  */
 export function sanitizeMarkdownUrl(url: string): string | null {
-  const value = url.trim();
-  if (value === '') return null;
+  // Browsers drop tab / CR / LF anywhere in a URL and read `\` as `/`, so `java\tscript:` is `javascript:` and
+  // `/\evil.example` is `//evil.example`. Decide on the URL as the browser will see it.
+  const value = url.trim().replace(/[\t\n\r]/g, '');
+  const normalized = value.replace(/\\/g, '/');
+  if (normalized === '') return null;
 
   // `//host` is protocol-relative: treating it as a path would skip the scheme allowlist.
-  if (value.startsWith('//')) return null;
+  if (normalized.startsWith('//')) return null;
   if (
-    value.startsWith('/') ||
-    value.startsWith('#') ||
-    value.startsWith('./') ||
-    value.startsWith('../')
+    normalized.startsWith('/') ||
+    normalized.startsWith('#') ||
+    normalized.startsWith('./') ||
+    normalized.startsWith('../')
   ) {
     return url;
   }
 
   // Only a scheme before any '/' counts as a protocol.
-  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value)?.[1];
+  const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(normalized)?.[1];
   if (!scheme) return url;
 
   const protocol = `${scheme.toLowerCase()}:`;
   return (ALLOWED_URL_PROTOCOLS as readonly string[]).includes(protocol) ? url : null;
 }
 
-/** Splits Markdown into [text, code, text, code, …]; code segments sit at odd indices. */
-export const MARKDOWN_CODE_SEGMENT = /(```[\s\S]*?```|`[^`\n]*`)/g;
 
 /**
  * Inline / image links and reference definitions whose destination is protocol-relative.
@@ -88,21 +91,14 @@ const PROTOCOL_RELATIVE_LINK_DEF = /^(\s*\[[^\]]+\]:\s*)\/\/\S+/gm;
 
 export function stripProtocolRelativeMarkdownLinks(content: string): string {
   if (!content.includes('//')) return content;
-  return content
-    .split(MARKDOWN_CODE_SEGMENT)
-    .map((segment, index) =>
-      index % 2 === 1
-        ? segment
-        : segment
-            .replace(PROTOCOL_RELATIVE_INLINE_LINK, '$1(#)')
-            .replace(PROTOCOL_RELATIVE_LINK_DEF, '$1#'),
-    )
-    .join('');
+  return rewriteOutsideCode(content, (text) =>
+    text.replace(PROTOCOL_RELATIVE_INLINE_LINK, '$1(#)').replace(PROTOCOL_RELATIVE_LINK_DEF, '$1#'),
+  );
 }
 
 /**
  * Mermaid config overrides inside a diagram: `%%{init: …}%%` directives and a leading `---`
- * frontmatter block. Mermaid keeps `securityLevel` "secure", but not `htmlLabels`, so a directive
+ * frontmatter block. Mermaid protects `securityLevel` from directives (its `secure` list), but not `htmlLabels`, so a directive
  * could turn HTML labels back on.
  */
 const MERMAID_FENCE =

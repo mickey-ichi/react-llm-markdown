@@ -23,9 +23,10 @@ Only the latest release receives fixes.
 
 ## How the project is checked
 
-- CI runs the type check, the build and the unit tests (including an XSS payload suite) on Linux, macOS and Windows.
-- CI runs the end-to-end suite in Chromium: 24 attack payloads against the web renderer, the React Native renderer
+- CI runs the build, the type check and the unit tests (including an XSS payload suite) on Linux, macOS and Windows.
+- CI runs the end-to-end suite in Chromium: 27 attack payloads against the web renderer, the React Native renderer
   and the WebView documents (no script runs, no request reaches the attacker's host, no navigation), plus performance
   budgets for long text, large tables, many charts, large charts and repeated rendering.
 - Dependabot keeps dependencies and GitHub Actions current; actions are pinned by commit SHA.
-- npm releases are published from CI with Trusted Publishing and provenance — never from a laptop.
+- npm releases are published from CI with Trusted Publishing and provenance. (0.1.0, the first, was published from a
+  local build of the tagged commit to create the package; it has no provenance.)

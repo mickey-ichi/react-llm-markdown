@@ -16,9 +16,12 @@ export interface WebViewLikeProps {
 
 export type WebViewComponent = ComponentType<WebViewLikeProps>;
 
-/** Only the document itself may load; a click on anything inside it navigates nowhere. */
+/**
+ * Only the document itself may load (it is given as HTML with base URL `about:blank`); any other navigation — a link,
+ * a `data:` page (which would have no CSP), a redirect — is refused.
+ */
 export function allowWebViewRequest(request: { url: string }): boolean {
-  return request.url === 'about:blank' || request.url.startsWith('data:');
+  return request.url === 'about:blank';
 }
 
 /** A WebView sized to its content (the page reports its height with `postMessage`). */
@@ -38,7 +41,7 @@ export function RichBlock({ html, webView: WebView, minHeight }: { html: string;
           }
         }}
         onShouldStartLoadWithRequest={allowWebViewRequest}
-        originWhitelist={['about:blank', 'data:*']}
+        originWhitelist={['about:blank']}
         scrollEnabled={false}
         setSupportMultipleWindows={false}
         source={{ html, baseUrl: 'about:blank' }}

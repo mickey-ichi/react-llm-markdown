@@ -6,6 +6,21 @@
   with the matching stylesheet pinned in the WebView. Web math still uses Streamdown's KaTeX 0.16 until
   `@streamdown/math` upgrades; `styles.css` now always carries that version's CSS (tested).
 - Dependabot: Streamdown packages grouped; majors of Streamdown and Shiki are upgraded by hand.
+- Security (from a review of 0.1.0):
+  - `isImageAllowed` (web and native): restrict which image hosts load; refused images are never requested.
+  - Web: `id` / `name` from raw HTML get a `user-content-` prefix (DOM clobbering).
+  - URLs are judged as the browser reads them: `/\host`, tab/CR/LF tricks and `java\tscript:` are refused.
+  - ECharts: `splitNumber` capped, axis tick steps removed (a gauge could freeze the page); string arrays under `link`
+    removed.
+  - React Native WebViews: the CSP allows exactly the pinned files, and no navigation except the initial document.
+  - CLI viewer: requests whose `Host` is not `127.0.0.1` / `localhost` are refused (DNS rebinding).
+- Fixes:
+  - LaTeX delimiters: escaped brackets in prose (`\[this\]`, `arr\[0\]`) are no longer turned into math, and `~~~`
+    fences, nested fences and a fence still streaming are left alone.
+  - React Native: relative links and images resolve correctly (React Native's `URL` cannot), Mermaid shows its
+    source while streaming instead of reloading a WebView per chunk, highlighted code is cached.
+  - package.json: `main`, `types` and `react-native` fields, for Metro without package exports (React Native < 0.79)
+    and TypeScript `moduleResolution: node`.
 
 ## 0.1.0 — 2026-11-07
 
