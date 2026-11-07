@@ -26,7 +26,9 @@ function scrollToAnchorInView(event: MouseEvent<HTMLAnchorElement>, href: string
  */
 export const SAFE_COMPONENTS: Components = {
   a: ({ href, children, id, ...props }) => {
-    if (typeof href === 'string' && href.startsWith('#')) {
+    // The URL policy removed the href (javascript:, data:, …): show the text, not something that looks clickable.
+    if (typeof href !== 'string' || href === '') return <span id={id}>{children}</span>;
+    if (href.startsWith('#')) {
       return (
         <a
           aria-describedby={props['aria-describedby']}

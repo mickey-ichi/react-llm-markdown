@@ -16,4 +16,5 @@ First release.
   WebView documents; 24 attack payloads and performance budgets.
 - Docs: [security](docs/security.md), [performance](docs/performance.md) and a generated
   [end-to-end test report](docs/test-report.md) (`npm run docs:report`).
+- Playground on GitHub Pages: edit or stream Markdown and see the web and React Native renderers side by side.
 - `react-llm-markdown` CLI: view a local `.md` file in the browser with live reload.

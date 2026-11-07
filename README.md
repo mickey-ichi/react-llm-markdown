@@ -2,6 +2,9 @@
 
 [![npm](https://img.shields.io/npm/v/react-llm-markdown)](https://www.npmjs.com/package/react-llm-markdown) [![CI](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/ci.yml/badge.svg)](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/ci.yml)
 
+**[Try it in the playground →](https://mickey-ichi.github.io/react-llm-markdown/)** — paste or stream Markdown and
+see it rendered on the web and in React Native side by side, attack payloads included.
+
 Safe, rich Markdown for **React and React Native** — built for text an LLM wrote — plus a CLI that shows any `.md` file
 in your browser.
 

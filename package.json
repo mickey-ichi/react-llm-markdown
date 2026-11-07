@@ -82,9 +82,10 @@
     "view": "node bin/react-llm-markdown.js",
     "e2e:web": "playwright test --project=web",
     "e2e:native": "node scripts/build-example.mjs && playwright test --project=native-web --project=webview",
-    "e2e": "npm run e2e:native && playwright test --project=web",
+    "e2e": "npm run e2e:native && npm run site && playwright test --project=web --project=site",
     "screenshots": "node scripts/build-example.mjs && node scripts/screenshots.mjs",
-    "docs:report": "PLAYWRIGHT_JSON_OUTPUT_NAME=test-results/e2e.json playwright test --reporter=json,line --workers=2; node scripts/test-report.mjs"
+    "docs:report": "PLAYWRIGHT_JSON_OUTPUT_NAME=test-results/e2e.json playwright test --reporter=json,line --workers=2; node scripts/test-report.mjs",
+    "site": "node scripts/build-site.mjs"
   },
   "dependencies": {
     "@shikijs/engine-javascript": "^3.23.0",
@@ -130,6 +131,7 @@
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-native": "^0.88.1",
+    "react-native-web": "^0.21.4",
     "react-native-webview": "^14.0.1",
     "streamdown": "^2.6.0",
     "tailwindcss": "^4.3.5",
