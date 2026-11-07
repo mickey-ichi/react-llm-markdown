@@ -102,24 +102,24 @@
     "unified": "^11.0.5"
   },
   "peerDependencies": {
-    "@streamdown/cjk": "^1.0.3",
-    "@streamdown/code": "^1.1.1",
-    "@streamdown/math": "^1.0.2",
-    "@streamdown/mermaid": "^1.0.2",
+    "@streamdown/cjk": "^1.0.4",
+    "@streamdown/code": "^2.0.0",
+    "@streamdown/math": "^1.0.3",
+    "@streamdown/mermaid": "^1.0.3",
     "echarts": "^6.1.0",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0",
     "react-native": ">=0.74",
     "react-native-webview": ">=13",
-    "streamdown": "^2.6.0"
+    "streamdown": "^2.7.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",
-    "@shikijs/types": "^3.23.0",
-    "@streamdown/cjk": "^1.0.3",
-    "@streamdown/code": "^1.1.1",
-    "@streamdown/math": "^1.0.2",
-    "@streamdown/mermaid": "^1.0.2",
+    "@shikijs/types": "^4.6.0",
+    "@streamdown/cjk": "^1.0.4",
+    "@streamdown/code": "^2.0.0",
+    "@streamdown/math": "^1.0.3",
+    "@streamdown/mermaid": "^1.0.3",
     "@tailwindcss/cli": "^4.3.5",
     "@tailwindcss/oxide": "^4.3.5",
     "@types/mdast": "^4.0.4",
@@ -133,7 +133,7 @@
     "react-native": "^0.88.1",
     "react-native-web": "^0.21.4",
     "react-native-webview": "^14.0.1",
-    "streamdown": "^2.6.0",
+    "streamdown": "^2.7.1",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2"
   },
