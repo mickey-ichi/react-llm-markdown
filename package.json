@@ -36,6 +36,19 @@
   "main": "./dist/web/index.js",
   "types": "./dist/web/index.d.ts",
   "react-native": "./dist/native/index.js",
+  "typesVersions": {
+    "*": {
+      "web": [
+        "./dist/web/index.d.ts"
+      ],
+      "native": [
+        "./dist/native/index.d.ts"
+      ],
+      "core": [
+        "./dist/core/index.d.ts"
+      ]
+    }
+  },
   "sideEffects": [
     "**/*.css"
   ],
@@ -88,7 +101,8 @@
     "e2e": "npm run e2e:native && npm run site && playwright test --project=web --project=site",
     "screenshots": "node scripts/build-example.mjs && node scripts/screenshots.mjs",
     "docs:report": "PLAYWRIGHT_JSON_OUTPUT_NAME=test-results/e2e.json playwright test --reporter=json,line --workers=2; node scripts/test-report.mjs",
-    "site": "node scripts/build-site.mjs"
+    "site": "node scripts/build-site.mjs",
+    "lint:package": "publint && attw --pack . --ignore-rules cjs-resolves-to-esm --exclude-entrypoints ./styles.css"
   },
   "dependencies": {
     "@shikijs/engine-javascript": "^3.23.0",
@@ -117,6 +131,7 @@
     "streamdown": "^2.6.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@playwright/test": "^1.65.0",
     "@shikijs/types": "^3.23.0",
     "@streamdown/cjk": "^1.0.3",
@@ -131,6 +146,7 @@
     "@types/react-dom": "^19.3.0",
     "echarts": "^6.1.0",
     "esbuild": "^0.28.2",
+    "publint": "^0.3.25",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-native": "^0.88.1",

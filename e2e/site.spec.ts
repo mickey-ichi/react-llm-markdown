@@ -106,7 +106,7 @@ test('on a phone: no sideways scroll, sticky pane tabs, React Native without a d
   await context.close();
 });
 
-const DOC_SLUGS = ['introduction', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'security', 'performance', 'test-report', 'changelog'];
+const DOC_SLUGS = ['introduction', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'faq', 'security', 'performance', 'test-report', 'changelog'];
 
 test.describe('documentation', () => {
   test('every page renders, its table of contents matches its headings, and its links lead somewhere', async ({ page, request }) => {
@@ -138,6 +138,30 @@ test.describe('documentation', () => {
     expect(await page.evaluate(() => (window as { __kept?: boolean }).__kept)).toBe(true);
     await page.goBack();
     await expect(page.locator('.docs-page h1')).toHaveText(/Core API/);
+  });
+
+  test('examples show a live preview, with the source one tab away', async ({ page }) => {
+    await page.goto(`${base}/docs/rich-blocks/`);
+    const examples = page.locator('.live');
+    await expect(examples).toHaveCount(4);
+    const chart = examples.nth(3);
+    await chart.scrollIntoViewIfNeeded();
+    await expect(chart.locator('[data-rlm-block-body="echarts"] canvas')).toBeVisible({ timeout: 15_000 });
+    await chart.getByRole('tab', { name: 'Markdown' }).click();
+    await expect(chart).toContainText('"series"');
+    await expect(examples.nth(1).locator('.katex').first()).toBeVisible();
+  });
+
+  test('every page has its own title, description and share card; unknown URLs get a 404 page', async ({ request }) => {
+    for (const slug of DOC_SLUGS) {
+      const html = await (await request.get(`${base}/docs/${slug}/`)).text();
+      expect(html).toMatch(/<title>[^<]+ — react-llm-markdown<\/title>/);
+      expect(html).toContain(`<link rel="canonical" href="https://mickey-ichi.github.io/react-llm-markdown/docs/${slug}/" />`);
+      expect(html).toContain('og:image" content="https://mickey-ichi.github.io/react-llm-markdown/social-card.png"');
+    }
+    expect(await (await request.get(`${base}/sitemap.xml`)).text()).toContain('/docs/faq/');
+    expect((await request.get(`${base}/robots.txt`)).status()).toBe(200);
+    expect(await (await request.get(`${base}/404.html`)).text()).toContain("This page doesn't exist");
   });
 
   test('links between repo docs become site pages', async ({ page }) => {

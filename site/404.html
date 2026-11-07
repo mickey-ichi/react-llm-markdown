@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page not found — react-llm-markdown</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/react-llm-markdown/favicon-64.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/react-llm-markdown/site.css" />
+    <script>
+      try {
+        var t = localStorage.getItem('rlm-site-theme');
+        if (t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
+    <style>
+      .not-found { display: grid; place-items: center; min-height: 100vh; padding: 24px; text-align: center; }
+      .not-found img { border-radius: 18px; }
+      .not-found h1 { margin: 20px 0 8px; font: 800 34px/1.1 var(--display); letter-spacing: -0.02em; }
+      .not-found p { margin: 0 0 24px; color: var(--graphite); }
+      .not-found nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+      .not-found a { padding: 9px 16px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); font-weight: 600; text-decoration: none; }
+      .not-found a.primary { border-color: var(--ink); background: var(--highlighter); color: #14161b; }
+    </style>
+  </head>
+  <body>
+    <main class="not-found">
+      <div>
+        <img alt="" height="72" src="/react-llm-markdown/icon-192.png" width="72" />
+        <h1>This page doesn't exist</h1>
+        <p>The link may be old, or the address mistyped.</p>
+        <nav>
+          <a class="primary" href="/react-llm-markdown/docs/introduction/">Read the docs</a>
+          <a href="/react-llm-markdown/">Open the playground</a>
+          <a href="https://github.com/mickey-ichi/react-llm-markdown">GitHub</a>
+        </nav>
+      </div>
+    </main>
+  </body>
+</html>

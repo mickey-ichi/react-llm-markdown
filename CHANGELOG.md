@@ -14,6 +14,9 @@
     removed.
   - React Native WebViews: the CSP allows exactly the pinned files, and no navigation except the initial document.
   - CLI viewer: requests whose `Host` is not `127.0.0.1` / `localhost` are refused (DNS rebinding).
+- Project: CONTRIBUTING, Code of Conduct, issue and PR templates; CI checks the package with publint and
+  are-the-types-wrong; `typesVersions` for TypeScript `moduleResolution: node10`.
+- Docs: live examples (preview / source), FAQ, a 404 page, per-page titles, descriptions and share cards, sitemap.
 - Documentation site: https://mickey-ichi.github.io/react-llm-markdown/docs/ (guide, web, React Native, rich blocks,
   core API, CLI, security, performance, test report, changelog), rendered with the library itself.
 - Fixes:

@@ -9,6 +9,7 @@ import performance from '../docs/performance.md';
 import security from '../docs/security.md';
 import testReport from '../docs/test-report.md';
 import cli from './docs/cli.md';
+import faq from './docs/faq.md';
 import core from './docs/core.md';
 import gettingStarted from './docs/getting-started.md';
 import introduction from './docs/introduction.md';
@@ -37,6 +38,7 @@ const GROUPS: { title: string; pages: Page[] }[] = [
       { slug: 'rich-blocks', title: 'Code, math, diagrams, charts', markdown: richBlocks, source: 'site/docs/rich-blocks.md' },
       { slug: 'core', title: 'Core API', markdown: core, source: 'site/docs/core.md' },
       { slug: 'cli', title: 'CLI viewer', markdown: cli, source: 'site/docs/cli.md' },
+      { slug: 'faq', title: 'FAQ', markdown: faq, source: 'site/docs/faq.md' },
     ],
   },
   {
@@ -133,6 +135,45 @@ function headingsOf(markdown: string): Heading[] {
     }
   }
   return out;
+}
+
+// ---------- live examples ----------
+
+/** ````markdown live fences: shown as a rendered preview with the source one tab away. */
+const LIVE = /^````markdown live\n([\s\S]*?)\n````$/gm;
+
+type Chunk = { live: false; markdown: string } | { live: true; source: string };
+
+function chunksOf(markdown: string): Chunk[] {
+  const chunks: Chunk[] = [];
+  let index = 0;
+  for (const match of markdown.matchAll(LIVE)) {
+    chunks.push({ live: false, markdown: markdown.slice(index, match.index) });
+    chunks.push({ live: true, source: match[1]! });
+    index = match.index + match[0].length;
+  }
+  chunks.push({ live: false, markdown: markdown.slice(index) });
+  return chunks.filter((chunk) => chunk.live || chunk.markdown.trim() !== '');
+}
+
+function LiveExample({ source }: { source: string }) {
+  const [tab, setTab] = useState<'preview' | 'markdown'>('preview');
+  return (
+    <div className="live">
+      <div aria-label="Example" className="live-tabs" role="tablist">
+        {(['preview', 'markdown'] as const).map((name) => (
+          <button aria-selected={tab === name} key={name} onClick={() => setTab(name)} role="tab" type="button">
+            {name === 'preview' ? 'Preview' : 'Markdown'}
+          </button>
+        ))}
+      </div>
+      <div className="live-body" role="tabpanel">
+        <MarkdownView codeBlockMaxHeight={0} lineNumbers={false} softBreaks={false}>
+          {tab === 'preview' ? source : `\`\`\`\`markdown\n${source}\n\`\`\`\``}
+        </MarkdownView>
+      </div>
+    </div>
+  );
 }
 
 // ---------- app ----------
@@ -294,9 +335,22 @@ function Docs() {
         </nav>
 
         <article className="docs-page">
-          <MarkdownView codeBlockMaxHeight={0} components={components} key={slug} lineNumbers={false} softBreaks={false} tableMaxHeight={0}>
-            {page.markdown}
-          </MarkdownView>
+          {chunksOf(page.markdown).map((chunk, i) =>
+            chunk.live ? (
+              <LiveExample key={`${slug}-${i}`} source={chunk.source} />
+            ) : (
+              <MarkdownView
+                codeBlockMaxHeight={0}
+                components={components}
+                key={`${slug}-${i}`}
+                lineNumbers={false}
+                softBreaks={false}
+                tableMaxHeight={0}
+              >
+                {chunk.markdown}
+              </MarkdownView>
+            ),
+          )}
           <footer className="docs-pager">
             {index > 0 ? (
               <a href={pageUrl(PAGES[index - 1]!.slug)} onClick={(e) => go(e, pageUrl(PAGES[index - 1]!.slug))}>
