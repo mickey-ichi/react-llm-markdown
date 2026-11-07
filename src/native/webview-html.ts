@@ -57,12 +57,23 @@ function originOf(url: string): string {
 const REPORT_HEIGHT = `function rlmReport(){var h=Math.ceil(document.documentElement.getBoundingClientRect().height);if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify({height:h}))}
 window.addEventListener('load',rlmReport);if(window.ResizeObserver)new ResizeObserver(rlmReport).observe(document.documentElement);`;
 
+/** Whether a theme's background is dark (relative luminance of `#rrggbb` / `#rgb`; anything else counts as light). */
+export function isDarkTheme(theme: NativeTheme): boolean {
+  const match = /^rgb\((\d+), (\d+), (\d+)\)$/.exec(toRgb(theme.background));
+  if (!match) return false;
+  const [r, g, b] = match.slice(1).map(Number) as [number, number, number];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128;
+}
+
 function page(theme: NativeTheme, body: string, script?: ScriptSource, extraStyle = ''): string {
   const scriptSrc = script ? originOf(script.url) : "'none'";
+  // Without a matching color-scheme, a WebView (or iframe) on a dark screen paints an opaque white canvas.
+  const scheme = isDarkTheme(theme) ? 'dark' : 'light';
   return `<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="color-scheme" content="${scheme}">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptSrc} 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:">
-<style>html,body{margin:0;padding:0;background:transparent;color:${theme.foreground};font-family:-apple-system,system-ui,sans-serif}${extraStyle}</style>
+<style>:root{color-scheme:${scheme}}html,body{margin:0;padding:0;background:transparent;color:${theme.foreground};font-family:-apple-system,system-ui,sans-serif}${extraStyle}</style>
 </head><body>${body}
 <script>${REPORT_HEIGHT}</script>
 ${script ? `<script src="${escapeAttr(script.url)}"${script.integrity ? ` integrity="${escapeAttr(script.integrity)}" crossorigin="anonymous"` : ''}></script>` : ''}

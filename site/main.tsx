@@ -9,6 +9,28 @@ import { PRESETS } from './presets.ts';
 
 const REPO = 'https://github.com/mickey-ichi/react-llm-markdown';
 const SPEEDS = { slow: 2, normal: 6, fast: 18 } as const;
+
+const code = (lang: string, body: string) => `\`\`\`${lang}\n${body}\n\`\`\``;
+const INSTALL = [
+  {
+    title: 'Web',
+    markdown: [
+      code('bash', 'npm install react-llm-markdown \\\n  streamdown @streamdown/code @streamdown/math \\\n  @streamdown/mermaid @streamdown/cjk echarts'),
+      code('tsx', "import { MarkdownView } from 'react-llm-markdown';\nimport 'react-llm-markdown/styles.css';\n\n<MarkdownView streaming={!done}>\n  {text}\n</MarkdownView>"),
+    ].join('\n\n'),
+  },
+  {
+    title: 'React Native and Expo',
+    markdown: [
+      code('bash', 'npm install react-llm-markdown\nnpx expo install react-native-webview'),
+      code('tsx', "import { WebView } from 'react-native-webview';\nimport { MarkdownView } from 'react-llm-markdown/native';\n\n<MarkdownView\n  streaming={!done}\n  webView={WebView}\n>\n  {text}\n</MarkdownView>"),
+    ].join('\n\n'),
+  },
+  {
+    title: 'Any .md file',
+    markdown: [code('bash', 'npx react-llm-markdown README.md'), 'Opens it in your browser and reloads on every save.'].join('\n\n'),
+  },
+];
 type Speed = keyof typeof SPEEDS;
 type Pane = 'source' | 'web' | 'phone';
 
@@ -37,6 +59,19 @@ function initialText(): { text: string; preset: string | null } {
   return { text: PRESETS[0]!.markdown, preset: PRESETS[0]!.id };
 }
 
+/** True on screens where the panes are shown one at a time (same breakpoint as site.css). */
+function useNarrow(): boolean {
+  const query = '(max-width: 1100px)';
+  const [narrow, setNarrow] = useState(() => matchMedia(query).matches);
+  useEffect(() => {
+    const list = matchMedia(query);
+    const update = () => setNarrow(list.matches);
+    list.addEventListener('change', update);
+    return () => list.removeEventListener('change', update);
+  }, []);
+  return narrow;
+}
+
 function initialDark(): boolean {
   try {
     const saved = localStorage.getItem('rlm-site-theme');
@@ -59,6 +94,7 @@ function App() {
   const [pane, setPane] = useState<Pane>('web');
   const [copied, setCopied] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
+  const narrow = useNarrow();
 
   const streaming = shown !== null && shown < text.length;
   const visible = shown === null ? text : text.slice(0, shown);
@@ -141,7 +177,7 @@ function App() {
               {streaming ? 'Stop streaming' : 'Stream it'}
             </button>
             <label className="speed">
-              <span>Speed</span>
+              <span className="speed-label">Speed</span>
               <select onChange={(e) => setSpeed(e.target.value as Speed)} value={speed}>
                 <option value="slow">Slow</option>
                 <option value="normal">Normal</option>
@@ -149,7 +185,7 @@ function App() {
               </select>
             </label>
             <button className="ghost" onClick={share} type="button">
-              {copied ?? 'Copy link'}
+              {copied ?? (narrow ? 'Share' : 'Copy link')}
             </button>
             <button aria-label={dark ? 'Use light theme' : 'Use dark theme'} className="ghost square" onClick={() => setDark((d) => !d)} type="button">
               {dark ? '☀' : '☾'}
@@ -203,51 +239,40 @@ function App() {
             <div className="pane-label">
               React Native <code>react-llm-markdown/native</code>
             </div>
-            <div className="phone">
-              <div aria-hidden className="phone-island" />
-              <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 44 }} style={{ flex: 1 }}>
+            {narrow ? (
+              // Already on a phone: no device frame, the page itself is the screen.
+              <div className="device-bare">
                 <NativeMarkdownView colorScheme={dark ? 'dark' : 'light'} streaming={streaming} webView={IframeWebView}>
                   {visible}
                 </NativeMarkdownView>
-              </ScrollView>
-            </div>
+              </div>
+            ) : (
+              <div className="phone">
+                <div aria-hidden className="phone-status">
+                  <span className="phone-island" />
+                </div>
+                <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 8 }} showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+                  <NativeMarkdownView colorScheme={dark ? 'dark' : 'light'} streaming={streaming} webView={IframeWebView}>
+                    {visible}
+                  </NativeMarkdownView>
+                </ScrollView>
+              </div>
+            )}
             <p className="note">Rendered by the native renderer through react-native-web. Math, diagrams and charts run in the same WebView documents a phone would load, here in a sandboxed iframe.</p>
           </div>
         </div>
       </section>
 
       <section aria-label="Install" className="install">
-        <div>
-          <h2>Web</h2>
-          <pre>
-            <code>npm install react-llm-markdown streamdown @streamdown/code @streamdown/math @streamdown/mermaid @streamdown/cjk echarts</code>
-          </pre>
-          <pre>
-            <code>{`import { MarkdownView } from 'react-llm-markdown';
-import 'react-llm-markdown/styles.css';
-
-<MarkdownView streaming={!done}>{text}</MarkdownView>`}</code>
-          </pre>
-        </div>
-        <div>
-          <h2>React Native and Expo</h2>
-          <pre>
-            <code>npm install react-llm-markdown react-native-webview</code>
-          </pre>
-          <pre>
-            <code>{`import { WebView } from 'react-native-webview';
-import { MarkdownView } from 'react-llm-markdown/native';
-
-<MarkdownView streaming={!done} webView={WebView}>{text}</MarkdownView>`}</code>
-          </pre>
-        </div>
-        <div>
-          <h2>Any .md file</h2>
-          <pre>
-            <code>npx react-llm-markdown README.md</code>
-          </pre>
-          <p>Opens it in your browser and reloads on every save.</p>
-        </div>
+        {INSTALL.map((block) => (
+          <div key={block.title}>
+            <h2>{block.title}</h2>
+            {/* Rendered with the library itself: Shiki highlighting and a copy button. */}
+            <MarkdownView codeBlockMaxHeight={0} lineNumbers={false}>
+              {block.markdown}
+            </MarkdownView>
+          </div>
+        ))}
       </section>
 
       <footer className="footer">

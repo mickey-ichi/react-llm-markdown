@@ -196,6 +196,13 @@ describe('WebView documents', () => {
     expect(native.allowWebViewRequest({ url: 'https://evil.example' })).toBe(false);
   });
 
+  it('declares the color scheme so a dark screen never gets a white WebView', () => {
+    expect(native.isDarkTheme(native.DARK_THEME)).toBe(true);
+    expect(native.isDarkTheme(native.LIGHT_THEME)).toBe(false);
+    expect(native.mathHtml('x', native.DARK_THEME)).toContain('content="dark"');
+    expect(native.mermaidHtml('graph TD; A-->B;', native.LIGHT_THEME, false)).toContain('color-scheme:light');
+  });
+
   it('converts hex theme colors for the chart theme', () => {
     expect(native.toRgb('#fafafa')).toBe('rgb(250, 250, 250)');
     expect(native.toRgb('#fff')).toBe('rgb(255, 255, 255)');
