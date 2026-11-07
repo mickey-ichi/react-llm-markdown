@@ -2,6 +2,7 @@
 // fonts, and the browser bundle of the CLI viewer (esbuild).
 import { execFileSync } from 'node:child_process';
 import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -37,15 +38,21 @@ const scanner = new Scanner({
 const tokens = new Set(scanner.scan());
 writeFileSync(join(BUILD, 'candidates.txt'), [...tokens].map((token) => `${PREFIX}:${token}`).join('\n'));
 
-// 3. styles.css. KaTeX's fonts: woff2 only (every supported browser reads it), from dist/fonts/.
+// 3. styles.css. Web math is rendered by the KaTeX that @streamdown/math depends on, which can differ from this
+//    package's own `katex` (used by the React Native renderer). CSS class names change between KaTeX versions, so the
+//    CSS and fonts must come from that same copy.
+const require = createRequire(join(packageDir('@streamdown/math'), 'package.json'));
+const webKatexDir = dirname(require.resolve('katex/package.json'));
+cpSync(join(webKatexDir, 'dist', 'katex.min.css'), join(BUILD, 'katex-web.css'));
+// KaTeX's fonts: woff2 only (every supported browser reads it), from dist/fonts/.
 run('@tailwindcss/cli', 'tailwindcss', ['-i', 'src/web/styles.css', '-o', 'build/styles.css', '--minify']);
 const css = readFileSync(join(BUILD, 'styles.css'), 'utf8')
   .replace(/,\s*url\([^)]*KaTeX_[\w-]+\.(?:woff|ttf)\)\s*format\("(?:woff|truetype)"\)/g, '')
   .replace(/url\((["']?)[^)"']*?fonts\/(KaTeX_[\w-]+\.woff2)\1\)/g, 'url(fonts/$2)');
 writeFileSync(join(DIST, 'styles.css'), css);
 mkdirSync(join(DIST, 'fonts'), { recursive: true });
-for (const font of readdirSync(join(packageDir('katex'), 'dist', 'fonts')).filter((name) => name.endsWith('.woff2'))) {
-  cpSync(join(packageDir('katex'), 'dist', 'fonts', font), join(DIST, 'fonts', font));
+for (const font of readdirSync(join(webKatexDir, 'dist', 'fonts')).filter((name) => name.endsWith('.woff2'))) {
+  cpSync(join(webKatexDir, 'dist', 'fonts', font), join(DIST, 'fonts', font));
 }
 const fontRefs = [...css.matchAll(/url\(fonts\/([^)]+)\)/g)].map((m) => m[1]);
 if (fontRefs.length === 0) throw new Error('styles.css has no KaTeX font URLs - check the rewrite');
