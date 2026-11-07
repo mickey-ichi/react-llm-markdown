@@ -88,7 +88,7 @@
     "site": "node scripts/build-site.mjs"
   },
   "dependencies": {
-    "@shikijs/engine-javascript": "^3.23.0",
+    "@shikijs/engine-javascript": "^4.6.0",
     "@shikijs/langs": "^3.23.0",
     "@shikijs/themes": "^3.23.0",
     "katex": "^0.16.47",
