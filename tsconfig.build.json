@@ -1,0 +1,7 @@
+{
+  // Library + CLI to dist/ (.js + .d.ts). The browser viewer bundle is built by scripts/build.mjs.
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "noEmit": false, "declaration": true, "outDir": "dist", "rootDir": "src" },
+  "include": ["src"],
+  "exclude": ["src/viewer"]
+}

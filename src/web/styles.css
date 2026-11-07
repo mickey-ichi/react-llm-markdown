@@ -1,0 +1,528 @@
+/*
+ * react-llm-markdown styles. Source file: built by scripts/build.mjs into dist/styles.css, which
+ * bundles the Streamdown and KaTeX styles and the Tailwind utilities Streamdown uses (prefixed
+ * `rlm:`, so they never clash with the host app's own classes). Import dist/styles.css once.
+ *
+ * Theme: override any --rlm-* token below. Dark mode follows a `.dark` class or
+ * `data-theme="dark"` on an ancestor (usually <html>).
+ */
+@layer theme, base, utilities;
+@import 'streamdown/styles.css';
+@import 'katex/dist/katex.min.css';
+@import 'tailwindcss/theme.css' layer(theme) prefix(rlm);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@source '../../build/candidates.txt';
+
+@custom-variant dark (&:where(.dark, .dark *, [data-theme='dark'], [data-theme='dark'] *));
+
+@theme inline {
+  --color-background: var(--rlm-background);
+  --color-foreground: var(--rlm-foreground);
+  --color-muted: var(--rlm-muted);
+  --color-muted-foreground: var(--rlm-muted-foreground);
+  --color-border: var(--rlm-border);
+  --color-card: var(--rlm-card);
+  --color-primary: var(--rlm-primary);
+  --color-primary-foreground: var(--rlm-primary-foreground);
+  --color-sidebar: var(--rlm-sidebar);
+  --color-ring: var(--rlm-ring);
+}
+
+/*
+ * Streamdown expects Tailwind's preflight. Only the parts its controls need, scoped to the view
+ * and its fullscreen overlay, in a layer below the utilities.
+ */
+@layer base {
+  :where(.rlm-markdown, [data-streamdown='mermaid-fullscreen']) :where(button) {
+    margin: 0;
+    border: 0 solid;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  :where(.rlm-markdown, [data-streamdown='mermaid-fullscreen']) :where(svg) {
+    display: block;
+    vertical-align: middle;
+  }
+
+  :where(.rlm-markdown) :where(table) {
+    border-collapse: collapse;
+  }
+
+  :where(.rlm-markdown) :where(pre) {
+    margin: 0;
+  }
+
+  :where(.rlm-markdown) :where(*, ::before, ::after) {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--rlm-border);
+  }
+}
+
+/* Tokens. :where() keeps specificity at 0, so any host rule overrides them. */
+:where(:root) {
+  --rlm-background: #ffffff;
+  --rlm-foreground: #18181b;
+  --rlm-muted: #f4f4f5;
+  --rlm-muted-foreground: #71717a;
+  --rlm-border: #e4e4e7;
+  --rlm-card: #fafafa;
+  --rlm-primary: #18181b;
+  --rlm-primary-foreground: #fafafa;
+  --rlm-sidebar: #fafafa;
+  --rlm-ring: #3b82f6;
+  --rlm-link: #2563eb;
+  --rlm-chart-height: 320px;
+}
+
+:where(.dark, [data-theme='dark']) {
+  --rlm-background: #09090b;
+  --rlm-foreground: #fafafa;
+  --rlm-muted: #27272a;
+  --rlm-muted-foreground: #a1a1aa;
+  --rlm-border: #27272a;
+  --rlm-card: #18181b;
+  --rlm-primary: #fafafa;
+  --rlm-primary-foreground: #18181b;
+  --rlm-sidebar: #18181b;
+  --rlm-ring: #60a5fa;
+  --rlm-link: #60a5fa;
+}
+
+/* Links and images (rendered by the safe components in components.tsx). */
+.rlm-markdown .rlm-link {
+  color: var(--rlm-link);
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.rlm-markdown .rlm-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rlm-markdown .rlm-link:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--rlm-ring);
+  outline-offset: 2px;
+}
+
+.rlm-markdown .rlm-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-block: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* ECharts block. */
+.rlm-markdown [data-rlm-block-body='echarts'] {
+  width: 100%;
+  height: var(--rlm-chart-height);
+}
+
+.rlm-markdown [data-rlm-block-body='echarts-source'] {
+  margin: 0;
+  overflow-x: auto;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--rlm-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.8em;
+}
+
+/*
+ * Rich blocks (code, Mermaid, ECharts, tables) share one card surface and one compact header:
+ * a type label on the left, copy on the right.
+ *
+ * Mermaid rules are scoped per diagram type (svg[aria-roledescription=…]) because Mermaid reuses
+ * class names across types, and also match Streamdown's fullscreen overlay, which is portaled to
+ * <body>. Edges, arrowheads and labels follow currentColor, so diagrams stay readable in dark mode.
+ */
+.rlm-markdown {
+  --rlm-block-header-bg: var(--rlm-muted);
+  --rlm-block-header-fg: color-mix(in srgb, var(--rlm-foreground) 82%, transparent);
+  --rlm-block-surface: var(--rlm-card);
+}
+
+:is(.dark, [data-theme='dark']) .rlm-markdown {
+  --rlm-block-header-bg: var(--rlm-block-header-bg-dark, #303030);
+  --rlm-block-header-fg: var(--rlm-block-header-fg-dark, #d3d3d6);
+}
+
+.rlm-markdown
+  :is(
+    [data-streamdown='code-block'],
+    [data-streamdown='mermaid-block'],
+    [data-rlm-block='echarts']
+  ) {
+  position: relative;
+  gap: 0;
+  margin-block: 1rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.625rem;
+  padding: 0;
+}
+
+.rlm-markdown
+  :is(
+    [data-streamdown='code-block-header'],
+    [data-streamdown='mermaid-block'] > div:first-child,
+    [data-rlm-block-header]
+  ) {
+  display: flex;
+  height: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 0.75rem;
+  background: var(--rlm-block-header-bg);
+  color: var(--rlm-block-header-fg);
+}
+
+.rlm-markdown
+  :is(
+    [data-streamdown='code-block-header'],
+    [data-streamdown='mermaid-block'] > div:first-child,
+    [data-rlm-block-header]
+  )
+  > span {
+  margin-left: 0;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rlm-markdown
+  :is([data-streamdown='code-block'], [data-streamdown='mermaid-block'])
+  > div:has(> [data-streamdown$='-block-actions']) {
+  position: absolute;
+  top: 0;
+  right: 0.375rem;
+  z-index: 10;
+  height: 2rem;
+  margin: 0;
+}
+
+.rlm-markdown
+  :is([data-streamdown='code-block-actions'], [data-streamdown='mermaid-block-actions']) {
+  height: 2rem;
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.rlm-markdown [data-streamdown='code-block-copy-button'],
+.rlm-markdown [data-rlm-block-header] [data-streamdown='code-block-copy-button'] {
+  position: relative;
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  padding: 0;
+  color: var(--rlm-muted-foreground);
+  transition:
+    background-color 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    color 120ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.rlm-markdown [data-streamdown='code-block-copy-button']::before {
+  position: absolute;
+  inset: -0.375rem;
+  content: '';
+}
+
+.rlm-markdown [data-streamdown='code-block-copy-button']:hover {
+  background: color-mix(in srgb, var(--rlm-foreground) 8%, transparent);
+  color: var(--rlm-foreground);
+}
+
+.rlm-markdown [data-streamdown='code-block-copy-button']:focus-visible {
+  outline: 2px solid var(--rlm-ring);
+  outline-offset: -2px;
+}
+
+.rlm-markdown [data-streamdown='code-block-copy-button']:active {
+  transform: scale(0.94);
+}
+
+.rlm-markdown [data-streamdown='code-block-body'] {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--rlm-foreground) 8%, transparent);
+  border-radius: 0;
+  background: var(--rlm-block-surface);
+}
+
+:is(.dark, [data-theme='dark']) .rlm-markdown [data-streamdown='code-block-body'] pre {
+  background: var(--rlm-block-surface) !important;
+}
+
+.rlm-markdown [data-streamdown='mermaid-block'] > div:last-child {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  background: var(--rlm-block-surface);
+}
+
+.rlm-markdown [data-streamdown='mermaid-block'] {
+  background: transparent;
+}
+
+.rlm-markdown [data-rlm-block='echarts'] {
+  background: var(--rlm-block-surface);
+}
+
+.rlm-markdown [data-streamdown='table-wrapper'] {
+  padding: 0;
+  background: var(--rlm-block-surface);
+}
+
+.rlm-markdown [data-streamdown='table-wrapper'] > div {
+  border: 0;
+  border-radius: 0;
+  background: var(--rlm-block-surface);
+}
+
+.rlm-markdown [data-streamdown='table'] {
+  width: max-content;
+  min-width: 100%;
+}
+
+.rlm-markdown [data-streamdown='table-cell'] {
+  max-width: 20rem;
+}
+
+.rlm-markdown [data-rlm-block-header] [data-streamdown='code-block-copy-button'] {
+  margin-right: -0.375rem;
+}
+
+.rlm-markdown [data-rlm-block-body='echarts-source'] {
+  border-top: 1px solid color-mix(in srgb, var(--rlm-foreground) 8%, transparent);
+  background: var(--rlm-block-surface);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rlm-markdown [data-streamdown='code-block-copy-button'] {
+    transition: none;
+  }
+}
+
+.rlm-markdown mark {
+  background-color: #fde68a; 
+  color: #1f2937; 
+  padding: 0 0.2em;
+  border-radius: 0.2em;
+}
+
+[data-streamdown='mermaid-fullscreen'] {
+  align-items: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+[data-streamdown='mermaid-fullscreen'] > div:last-child {
+  flex: 1 1 auto;
+  align-self: stretch;
+  align-items: stretch;
+  justify-content: stretch;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+[data-streamdown='mermaid-fullscreen'] [data-streamdown='mermaid'],
+[data-streamdown='mermaid-fullscreen'] [data-streamdown='mermaid'] > div {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+[data-streamdown='mermaid-fullscreen'] [aria-label='Mermaid chart'] {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+[data-streamdown='mermaid-fullscreen'] [aria-label='Mermaid chart'] > svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  .edgePaths
+  path,
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  path.flowchart-link {
+  stroke: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  marker
+  path,
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  .arrowMarkerPath {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  .edgeLabel
+  text,
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  .edgeLabel
+  tspan {
+  fill: #c5c5c5 !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  .edgeLabel
+  rect {
+  fill: #e8e8e8 !important;
+  opacity: 1 !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription^='flowchart']
+  .edgeLabel
+  rect {
+  fill: #4e4e4e !important; 
+  opacity: 1 !important; 
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='stateDiagram']
+  .edgeLabel
+  rect {
+  fill: #e8e8e8 !important;
+  opacity: 1 !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='stateDiagram']
+  .edgeLabel
+  rect {
+  fill: #4e4e4e !important;
+  opacity: 1 !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='stateDiagram']
+  .edgeLabel
+  tspan {
+  fill: #c5c5c5 !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='sequence']
+  :is(.messageText, .loopText, .loopText tspan, .noteText) {
+  fill: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='sequence']
+  :is(.messageLine0, .messageLine1) {
+  stroke: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='sequence']
+  marker
+  path {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='er']
+  .relationshipLine,
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='er']
+  .marker :is(path, circle, line, polyline, polygon) {
+  stroke: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='er']
+  :is(.edgeLabel rect, .relationshipLabelBox) {
+  fill: #e8e8e8 !important;
+  opacity: 1 !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='er']
+  :is(.edgeLabel rect, .relationshipLabelBox) {
+  fill: #4e4e4e !important;
+  opacity: 1 !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='er']
+  :is(.edgeLabel, .relationshipLabel)
+  tspan {
+  fill: #c5c5c5 !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='stateDiagram']
+  .transition {
+  stroke: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='stateDiagram']
+  [id$='-barbEnd'],
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='stateDiagram']
+  [id$='-barbEnd']
+  :is(path, polygon, polyline) {
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='gantt']
+  :is(.titleText, .sectionTitle, [class^='taskTextOutside'], .grid .tick text) {
+  fill: currentColor !important;
+}
+
+:is(.dark, [data-theme='dark']) :is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='gantt']
+  :is(.grid .tick line, .grid path.domain) {
+  stroke: color-mix(in srgb, var(--rlm-foreground) 15%, transparent) !important;
+}
+
+:is(.rlm-markdown, [data-streamdown='mermaid-fullscreen'])
+  svg[aria-roledescription='mindmap']
+  .mindmap-node.section-root
+  text {
+  text-anchor: middle;
+}

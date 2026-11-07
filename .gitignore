@@ -1,0 +1,16 @@
+node_modules/
+build/
+*.tgz
+.DS_Store
+.idea/
+.vscode/
+.claude/worktrees/
+.claude/settings.local.json
+dist/
+test-results/
+playwright-report/
+example/node_modules/
+example/.pack/
+example/dist-web/
+example/.expo/
+example/package-lock.json
