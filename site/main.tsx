@@ -5,7 +5,14 @@ import { ScrollView } from 'react-native';
 import { MarkdownView as NativeMarkdownView } from '../src/native/index.ts';
 import { MarkdownView } from '../src/web/index.ts';
 import { IframeWebView } from './iframe-webview.tsx';
+import { LOCALE_NAMES, LOCALE_SHORT, LOCALES, localeFromPath, STRINGS } from './i18n.ts';
 import { PRESETS } from './presets.ts';
+
+const LOCALE = localeFromPath(location.pathname);
+const t = STRINGS[LOCALE];
+/** The site root without a locale (`/react-llm-markdown/`). */
+const SITE_BASE = location.pathname.replace(/[^/]*$/, '').replace(/(?:vi|ja)\/$/, '');
+const LOCALE_PREFIX = LOCALE === 'en' ? '' : `${LOCALE}/`;
 
 const REPO = 'https://github.com/mickey-ichi/react-llm-markdown';
 const SPEEDS = { slow: 2, normal: 6, fast: 18 } as const;
@@ -13,22 +20,22 @@ const SPEEDS = { slow: 2, normal: 6, fast: 18 } as const;
 const code = (lang: string, body: string) => `\`\`\`${lang}\n${body}\n\`\`\``;
 const INSTALL = [
   {
-    title: 'Web',
+    title: t.installWeb,
     markdown: [
       code('bash', 'npm install react-llm-markdown \\\n  streamdown @streamdown/code @streamdown/math \\\n  @streamdown/mermaid @streamdown/cjk echarts'),
       code('tsx', "import { MarkdownView } from 'react-llm-markdown';\nimport 'react-llm-markdown/styles.css';\n\n<MarkdownView streaming={!done}>\n  {text}\n</MarkdownView>"),
     ].join('\n\n'),
   },
   {
-    title: 'React Native and Expo',
+    title: t.installNative,
     markdown: [
       code('bash', 'npm install react-llm-markdown\nnpx expo install react-native-webview'),
       code('tsx', "import { WebView } from 'react-native-webview';\nimport { MarkdownView } from 'react-llm-markdown/native';\n\n<MarkdownView\n  streaming={!done}\n  webView={WebView}\n>\n  {text}\n</MarkdownView>"),
     ].join('\n\n'),
   },
   {
-    title: 'Any .md file',
-    markdown: [code('bash', 'npx react-llm-markdown README.md'), 'Opens it in your browser and reloads on every save.'].join('\n\n'),
+    title: t.installAny,
+    markdown: [code('bash', 'npx react-llm-markdown README.md'), t.installAnyNote].join('\n\n'),
   },
 ];
 type Speed = keyof typeof SPEEDS;
@@ -135,9 +142,9 @@ function App() {
     history.replaceState(null, '', url);
     try {
       await navigator.clipboard.writeText(url);
-      setCopied('Link copied');
+      setCopied(t.linkCopied);
     } catch {
-      setCopied('Link is in the address bar');
+      setCopied(t.linkInAddressBar);
     }
     window.setTimeout(() => setCopied(null), 2200);
   }, [text]);
@@ -146,48 +153,62 @@ function App() {
     <>
       <header className="masthead">
         <div className="brand">
-          <img alt="" className="brand-icon" height={48} src="icon-192.png" width={48} />
+          <img alt="" className="brand-icon" height={48} src={`${SITE_BASE}icon-192.png`} width={48} />
           <h1>react-llm-markdown</h1>
         </div>
         <p className="thesis">
-          Markdown from your model, rendered <mark className="swipe">safely</mark> — in the browser and on the phone.
+          {t.thesisBefore} <mark className="swipe">{t.thesisMark}</mark> {t.thesisAfter}
         </p>
         <nav aria-label="Project" className="links">
-          <a className="links-docs" href="docs/introduction/">
-            Docs
+          <a className="links-docs" href={`${SITE_BASE}${LOCALE_PREFIX}docs/introduction/`}>
+            {t.docs}
           </a>
-          <a href={REPO}>GitHub</a>
-          <a href="https://www.npmjs.com/package/react-llm-markdown">npm</a>
-          <a href="docs/security/">Security</a>
+          <a href={REPO}>{t.github}</a>
+          <a href="https://www.npmjs.com/package/react-llm-markdown">{t.npm}</a>
+          <a href={`${SITE_BASE}${LOCALE_PREFIX}docs/security/`}>{t.security}</a>
+          <span className="lang-switch">
+            {LOCALES.map((code) => (
+              <a
+                aria-current={code === LOCALE ? 'true' : undefined}
+                href={`${SITE_BASE}${code === 'en' ? '' : `${code}/`}${location.hash}`}
+                hrefLang={code}
+                key={code}
+                lang={code}
+                title={LOCALE_NAMES[code]}
+              >
+                {LOCALE_SHORT[code]}
+              </a>
+            ))}
+          </span>
         </nav>
       </header>
 
       <section aria-label="Playground" className="playground">
         <div className="toolbar">
-          <div aria-label="Examples" className="presets" role="group">
+          <div aria-label={t.examples} className="presets" role="group">
             {PRESETS.map((p) => (
               <button aria-pressed={preset === p.id} className="chip" key={p.id} onClick={() => choose(p.id)} type="button">
-                {p.label}
+                {t.presets[p.id as keyof typeof t.presets] ?? p.label}
               </button>
             ))}
           </div>
           <div className="controls">
             <button className={`stream ${streaming ? 'is-live' : ''}`} onClick={toggleStream} type="button">
               <span aria-hidden className="dot" />
-              {streaming ? 'Stop streaming' : 'Stream it'}
+              {streaming ? t.stopStreaming : t.streamIt}
             </button>
             <label className="speed">
-              <span className="speed-label">Speed</span>
+              <span className="speed-label">{t.speed}</span>
               <select onChange={(e) => setSpeed(e.target.value as Speed)} value={speed}>
-                <option value="slow">Slow</option>
-                <option value="normal">Normal</option>
-                <option value="fast">Fast</option>
+                <option value="slow">{t.slow}</option>
+                <option value="normal">{t.normal}</option>
+                <option value="fast">{t.fast}</option>
               </select>
             </label>
             <button className="ghost" onClick={share} type="button">
-              {copied ?? (narrow ? 'Share' : 'Copy link')}
+              {copied ?? (narrow ? t.share : t.copyLink)}
             </button>
-            <button aria-label={dark ? 'Use light theme' : 'Use dark theme'} className="ghost square" onClick={() => setDark((d) => !d)} type="button">
+            <button aria-label={dark ? t.lightTheme : t.darkTheme} className="ghost square" onClick={() => setDark((d) => !d)} type="button">
               {dark ? '☀' : '☾'}
             </button>
           </div>
@@ -196,7 +217,7 @@ function App() {
         <div aria-label="Show" className="tabs" role="tablist">
           {(['source', 'web', 'phone'] as const).map((p) => (
             <button aria-selected={pane === p} key={p} onClick={() => setPane(p)} role="tab" type="button">
-              {{ source: 'Markdown', web: 'Web', phone: 'React Native' }[p]}
+              {{ source: t.paneMarkdown, web: t.paneWeb, phone: t.paneNative }[p]}
             </button>
           ))}
         </div>
@@ -204,7 +225,7 @@ function App() {
         <div className="panes" data-pane={pane}>
           <div className="pane pane-source">
             <div className="pane-label">
-              Markdown <span>{streaming ? `${visible.length.toLocaleString('en')} / ${text.length.toLocaleString('en')}` : `${text.length.toLocaleString('en')} characters`}</span>
+              {t.paneMarkdown} <span>{streaming ? `${visible.length.toLocaleString('en')} / ${text.length.toLocaleString('en')}` : `${text.length.toLocaleString('en')} ${t.characters}`}</span>
             </div>
             <textarea
               aria-label="Markdown source"
@@ -220,7 +241,7 @@ function App() {
 
           <div className="pane pane-web">
             <div className="pane-label">
-              Web <code>react-llm-markdown</code>
+              {t.paneWeb} <code>react-llm-markdown</code>
             </div>
             <div className="browser">
               <div aria-hidden className="browser-bar">
@@ -237,7 +258,7 @@ function App() {
 
           <div className="pane pane-phone">
             <div className="pane-label">
-              React Native <code>react-llm-markdown/native</code>
+              {t.paneNative} <code>react-llm-markdown/native</code>
             </div>
             {narrow ? (
               // Already on a phone: no device frame, the page itself is the screen.
@@ -258,7 +279,7 @@ function App() {
                 </ScrollView>
               </div>
             )}
-            <p className="note">Rendered by the native renderer through react-native-web. Math, diagrams and charts run in the same WebView documents a phone would load, here in a sandboxed iframe.</p>
+            <p className="note">{t.nativeNote}</p>
           </div>
         </div>
       </section>
@@ -276,10 +297,11 @@ function App() {
       </section>
 
       <footer className="footer">
-        <span>MIT license</span>
-        <a href="docs/performance/">Performance</a>
-        <a href="docs/introduction/">Documentation</a>
-        <span>Built on Streamdown, Shiki, KaTeX, Mermaid and ECharts</span>
+        <span>{t.mitLicense}</span>
+        <a href={`${SITE_BASE}${LOCALE_PREFIX}docs/performance/`}>{t.performance}</a>
+        <a href={`${SITE_BASE}${LOCALE_PREFIX}docs/introduction/`}>{t.documentation}</a>
+        <a href="https://github.com/sponsors/mickey-ichi">♥ {t.sponsor}</a>
+        <span>{t.builtOn}</span>
       </footer>
     </>
   );
