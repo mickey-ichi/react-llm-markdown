@@ -29,6 +29,12 @@ updates:
     directory: /example
     schedule:
       interval: monthly
+    groups:
+      # react and react-dom must be the same version; Expo SDK packages move together.
+      react:
+        patterns: ["react", "react-dom", "@types/react"]
+      expo:
+        patterns: ["expo", "expo-*", "@expo/*", "react-native", "react-native-*"]
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
