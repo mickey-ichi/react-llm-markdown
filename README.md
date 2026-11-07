@@ -106,6 +106,7 @@ npx react-llm-markdown README.md
 
 | | |
 |---|---|
+| [Comparison](https://mickey-ichi.github.io/react-llm-markdown/docs/comparison/) | Next to react-markdown, Streamdown and the React Native renderers |
 | [Getting started](https://mickey-ichi.github.io/react-llm-markdown/docs/getting-started/) | Install, streaming an answer |
 | [Web renderer](https://mickey-ichi.github.io/react-llm-markdown/docs/web/) | Props, images, theming, element overrides, SSR |
 | [React Native renderer](https://mickey-ichi.github.io/react-llm-markdown/docs/react-native/) | Props, WebView blocks, highlighting, links, self-hosting |

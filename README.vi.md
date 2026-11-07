@@ -107,6 +107,7 @@ npx react-llm-markdown README.md
 
 | | |
 |---|---|
+| [So sánh](https://mickey-ichi.github.io/react-llm-markdown/vi/docs/comparison/) | Đặt cạnh react-markdown, Streamdown và các renderer cho React Native |
 | [Bắt đầu](https://mickey-ichi.github.io/react-llm-markdown/vi/docs/getting-started/) | Cài đặt, stream một câu trả lời |
 | [Renderer cho web](https://mickey-ichi.github.io/react-llm-markdown/vi/docs/web/) | Prop, ảnh, theme, ghi đè element, SSR |
 | [Renderer cho React Native](https://mickey-ichi.github.io/react-llm-markdown/vi/docs/react-native/) | Prop, khối WebView, tô màu code, link, tự host |

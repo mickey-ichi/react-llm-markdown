@@ -107,6 +107,7 @@ npx react-llm-markdown README.md
 
 | | |
 |---|---|
+| [比較](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/comparison/) | react-markdown、Streamdown、React Native 向けレンダラーとの比較 |
 | [スタートガイド](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/getting-started/) | インストール、回答のストリーミング |
 | [Web レンダラー](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/web/) | props、画像、テーマ、要素の上書き、SSR |
 | [React Native レンダラー](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/react-native/) | props、WebView ブロック、ハイライト、リンク、セルフホスト |

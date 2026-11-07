@@ -2,11 +2,7 @@
 appId: dev.reactllmmarkdown.e2e
 name: Copy code
 ---
-- launchApp:
-    clearState: true
-- extendedWaitUntil:
-    visible: Native demo
-    timeout: 60000
+- runFlow: common/launch.yaml
 - scrollUntilVisible:
     element: Copy code
 - tapOn: Copy code

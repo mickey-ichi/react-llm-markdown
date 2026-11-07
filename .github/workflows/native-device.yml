@@ -59,11 +59,13 @@ jobs:
         with:
           api-level: 34
           arch: x86_64
-          target: google_apis
+          target: aosp_atd
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
           script: |
+            adb shell settings put global hide_error_dialogs 1
+            adb shell settings put global anr_show_background 0
             adb install e2e-app/android/app/build/outputs/apk/release/app-release.apk
             maestro test e2e-app/maestro --format junit --output maestro-android.xml --test-output-dir maestro-android
       - if: always()
@@ -76,7 +78,7 @@ jobs:
           if-no-files-found: ignore
 
   ios:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -97,9 +99,11 @@ jobs:
         run: |
           set -o pipefail
           npx expo prebuild --platform ios
+          xcodebuild -version
           xcodebuild -workspace ios/RlmE2E.xcworkspace -scheme RlmE2E -configuration Release \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build \
-            CODE_SIGNING_ALLOWED=NO | tail -40
+            CODE_SIGNING_ALLOWED=NO > xcodebuild.log 2>&1 || { grep -E 'error:|Error:|\*\* BUILD FAILED' -A3 xcodebuild.log | head -80; exit 1; }
+          tail -5 xcodebuild.log
       - name: Boot a simulator and install the app
         run: |
           UDID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')

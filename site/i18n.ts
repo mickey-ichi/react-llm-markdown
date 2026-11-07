@@ -180,6 +180,11 @@ export const PAGE_META: Record<string, Record<Locale, [title: string, descriptio
     vi: ['Giới thiệu', 'Markdown an toàn, đầy đủ tính năng cho React và React Native, được gia cố cho văn bản do LLM viết.'],
     ja: ['はじめに', 'LLM が書いたテキストのために堅牢化された、React と React Native 向けの安全でリッチな Markdown。'],
   },
+  comparison: {
+    en: ['Comparison', 'react-llm-markdown next to react-markdown, Streamdown and the React Native Markdown renderers.'],
+    vi: ['So sánh', 'react-llm-markdown đặt cạnh react-markdown, Streamdown và các renderer Markdown cho React Native.'],
+    ja: ['比較', 'react-markdown、Streamdown、React Native 向け Markdown レンダラーとの比較。'],
+  },
   'getting-started': {
     en: ['Getting started', 'Install react-llm-markdown and render a streaming LLM answer on the web or in React Native.'],
     vi: ['Bắt đầu', 'Cài react-llm-markdown và hiển thị câu trả lời LLM đang stream trên web hoặc React Native.'],

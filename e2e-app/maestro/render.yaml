@@ -2,11 +2,7 @@
 appId: dev.reactllmmarkdown.e2e
 name: Native views
 ---
-- launchApp:
-    clearState: true
-- extendedWaitUntil:
-    visible: Native demo
-    timeout: 60000
+- runFlow: common/launch.yaml
 - assertVisible: Name
 - assertVisible: alpha
 - assertVisible: '22'

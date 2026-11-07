@@ -1,0 +1,14 @@
+# Starts the app fresh and waits for the demo document. A slow CI emulator can show a system "isn't responding"
+# dialog for another app (the launcher); it is dismissed so it does not cover the screen.
+appId: dev.reactllmmarkdown.e2e
+---
+- launchApp:
+    clearState: true
+- runFlow:
+    when:
+      visible: ".*isn't responding.*"
+    commands:
+      - tapOn: Wait
+- extendedWaitUntil:
+    visible: Native demo
+    timeout: 60000
