@@ -139,6 +139,8 @@ describe('MarkdownView (SSR)', () => {
     expect(html).toContain('href="../x.md"');
     expect(html).not.toContain('javascript:');
     expect(html).not.toContain('[blocked]');
+    // A refused link is plain text, not an <a> that looks clickable.
+    expect(html).toMatch(/<span>js<\/span>/);
   });
 
   it('accepts extra component overrides', () => {

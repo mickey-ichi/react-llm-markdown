@@ -14,3 +14,4 @@ example/.pack/
 example/dist-web/
 example/.expo/
 example/package-lock.json
+site-dist/
