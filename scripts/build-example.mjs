@@ -1,5 +1,6 @@
 // Packs this package exactly as npm would publish it, installs the tarball into e2e-app/ (the Expo test app), and exports
-// the app for the web (e2e-app/dist-web), which the native end-to-end tests drive with Playwright.
+// the app for the web (e2e-app/dist-web), which the native end-to-end tests drive with Playwright. The same app runs
+// on iOS and Android simulators in CI (.github/workflows/native-device.yml, flows in e2e-app/maestro/).
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -23,5 +24,7 @@ rmSync(join(EXAMPLE, 'node_modules', 'react-llm-markdown'), { recursive: true, f
 run(npm, ['install', '--no-audit', '--no-fund'], EXAMPLE);
 // Installing the tarball by path refreshes its integrity in the lockfile, so npm cannot reuse an older pack.
 run(npm, ['install', '--no-audit', '--no-fund', './.pack/react-llm-markdown.tgz'], EXAMPLE);
+// `--no-web`: only install the package (the iOS and Android builds in CI take it from here).
+if (process.argv.includes('--no-web')) process.exit(0);
 rmSync(join(EXAMPLE, 'dist-web'), { recursive: true, force: true });
 run(npx, ['expo', 'export', '--platform', 'web', '--output-dir', 'dist-web'], EXAMPLE);

@@ -1,0 +1,20 @@
+# A streamed answer ends as finished Markdown (no stray ** while it arrives), and the dark theme applies.
+appId: dev.reactllmmarkdown.e2e
+name: Streaming and dark theme
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: Native demo
+    timeout: 60000
+- tapOn:
+    id: start-stream
+- extendedWaitUntil:
+    visible:
+      id: stream-done
+    timeout: 30000
+- assertVisible: 'Streaming bold text and a table:'
+- assertNotVisible: '.*\*\*.*'
+- tapOn:
+    id: toggle-theme
+- takeScreenshot: native-dark
