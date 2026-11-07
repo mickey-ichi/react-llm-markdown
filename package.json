@@ -88,7 +88,7 @@
   },
   "dependencies": {
     "@shikijs/engine-javascript": "^3.23.0",
-    "@shikijs/langs": "^3.23.0",
+    "@shikijs/langs": "^4.6.0",
     "@shikijs/themes": "^3.23.0",
     "katex": "^0.16.47",
     "remark-cjk-friendly": "^2.3.4",
