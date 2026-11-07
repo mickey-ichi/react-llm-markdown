@@ -1,6 +1,6 @@
 {
   "name": "react-llm-markdown",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Safe, rich Markdown for React and React Native, hardened for LLM output: GFM, streaming, code highlighting, math, Mermaid and ECharts. Includes a live-reload .md viewer CLI.",
   "license": "MIT",
   "homepage": "https://github.com/mickey-ichi/react-llm-markdown#readme",

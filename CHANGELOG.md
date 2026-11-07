@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.1.2 — 2026-11-07
+
+Documentation and testing; the library code is unchanged from 0.1.1.
 
 - README rewritten (overview, quick start, docs map, compatibility, support) and translated: [Tiếng Việt](README.vi.md),
   [日本語](README.ja.md).
