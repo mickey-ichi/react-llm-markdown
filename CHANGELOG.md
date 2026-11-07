@@ -17,6 +17,7 @@
 - Documentation site: https://mickey-ichi.github.io/react-llm-markdown/docs/ (guide, web, React Native, rich blocks,
   core API, CLI, security, performance, test report, changelog), rendered with the library itself.
 - Fixes:
+  - Web: footnote links jump instead of animating when the reader prefers reduced motion.
   - LaTeX delimiters: escaped brackets in prose (`\[this\]`, `arr\[0\]`) are no longer turned into math, and `~~~`
     fences, nested fences and a fence still streaming are left alone.
   - React Native: relative links and images resolve correctly (React Native's `URL` cannot), Mermaid shows its

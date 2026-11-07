@@ -94,6 +94,8 @@ test('no payload runs script', async ({ page }) => {
 });
 
 test('external links open in a new tab without a referrer; footnotes stay in the page', async ({ page }) => {
+  // "Reduce motion" makes the footnote jump instead of animating, so the check does not depend on runner speed.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await open(page);
   const link = page.locator('.rlm-markdown a', { hasText: 'link' }).first();
   await expect(link).toHaveAttribute('target', '_blank');
@@ -103,6 +105,11 @@ test('external links open in a new tab without a referrer; footnotes stay in the
     await diagram.scrollIntoViewIfNeeded();
     await expect(diagram.locator('svg[aria-roledescription]')).toBeVisible({ timeout: 15_000 });
   }
+  // Lazy images load when scrolled near; on a slow runner one landing mid-scroll pushed the footnote out of view.
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await expect
+    .poll(() => page.evaluate(() => [...document.images].every((img) => img.complete)), { timeout: 15_000 })
+    .toBe(true);
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.locator('a[href="#user-content-fn-1"]').click();
   await expect(page.locator('#user-content-fn-1')).toBeInViewport({ timeout: 10_000 });
