@@ -77,16 +77,11 @@ a {
   gap: 10px;
 }
 
-.brand-hash {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: var(--highlighter);
-  color: #14161b;
-  font: 700 30px/1 var(--mono);
-  transform: translateY(6px);
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+  transform: translateY(7px);
 }
 
 .brand h1 {
@@ -250,7 +245,8 @@ select {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.25fr) 400px;
   gap: 16px;
-  height: clamp(560px, calc(100vh - 230px), 860px);
+  /* Tall enough for the phone to keep a phone's proportions (about 9 : 19.5). */
+  height: clamp(860px, calc(100vh - 140px), 1040px);
 }
 
 .pane {
@@ -347,10 +343,11 @@ select {
 .phone {
   position: relative;
   display: flex;
-  width: 372px;
+  width: 380px;
   max-width: 100%;
   flex: 1;
   min-height: 0;
+  max-height: 840px;
   flex-direction: column;
   overflow: hidden;
   border: 10px solid var(--bezel);
@@ -376,7 +373,7 @@ select {
 }
 
 .note {
-  max-width: 372px;
+  max-width: 380px;
   margin: 10px 0 0;
   color: var(--graphite);
   font-size: 12.5px;

@@ -1,3 +1,5 @@
+<p align="center"><img alt="" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/icon.png" width="112"></p>
+
 # react-llm-markdown
 
 [![npm](https://img.shields.io/npm/v/react-llm-markdown)](https://www.npmjs.com/package/react-llm-markdown) [![CI](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/ci.yml/badge.svg)](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/ci.yml)
