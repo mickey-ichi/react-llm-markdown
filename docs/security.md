@@ -109,5 +109,10 @@ Display math, Mermaid and ECharts are drawn in `react-native-webview` (only when
   link opens in a new tab without a referrer, but deciding whether to trust it is the reader's job.
 - Content you inject yourself through `components` overrides.
 - Mermaid's and ECharts' own vulnerabilities in the versions you install (keep them updated; `npm audit`).
+- **KaTeX on the web.** Web math is rendered by the KaTeX that `@streamdown/math` depends on, which is still KaTeX
+  0.16 and so affected by [GHSA-238p-pmpm-9mq7](https://github.com/advisories/GHSA-238p-pmpm-9mq7) (low: it needs an
+  existing prototype-pollution bug in the page to bypass `trust: false`). The React Native renderer uses this package's
+  own KaTeX, 0.19.1, which is fixed. KaTeX 0.18 renamed its CSS classes, so the web side cannot move ahead of
+  Streamdown alone; it will follow when `@streamdown/math` does.
 
 Report a vulnerability privately: [SECURITY.md](../SECURITY.md).

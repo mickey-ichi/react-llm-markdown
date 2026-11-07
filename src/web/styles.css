@@ -8,7 +8,8 @@
  */
 @layer theme, base, utilities;
 @import 'streamdown/styles.css';
-@import 'katex/dist/katex.min.css';
+/* KaTeX CSS of the KaTeX that renders web math (the one @streamdown/math uses), copied there by the build. */
+@import '../../build/katex-web.css';
 @import 'tailwindcss/theme.css' layer(theme) prefix(rlm);
 @import 'tailwindcss/utilities.css' layer(utilities) source(none);
 @source '../../build/candidates.txt';

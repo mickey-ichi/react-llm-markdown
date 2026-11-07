@@ -5,11 +5,32 @@ updates:
     schedule:
       interval: weekly
     groups:
+      # The web renderer's peers move together; review them as one change.
+      streamdown:
+        patterns: ["streamdown", "@streamdown/*"]
       dev-dependencies:
         dependency-type: development
+        exclude-patterns: ["streamdown", "@streamdown/*", "shiki", "@shikijs/*", "katex"]
     ignore:
       # Types follow the Node line in .nvmrc (22): a newer major would allow APIs Node 22 doesn't have.
       - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # Majors of these change the web renderer's contract (Streamdown's peers, Shiki's API used by both renderers):
+      # upgrade them by hand, together, when Streamdown does.
+      - dependency-name: "streamdown"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@streamdown/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "shiki"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@shikijs/*"
+        update-types: ["version-update:semver-major"]
+  - package-ecosystem: npm
+    directory: /example
+    schedule:
+      interval: monthly
+    ignore:
+      - dependency-name: "*"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /

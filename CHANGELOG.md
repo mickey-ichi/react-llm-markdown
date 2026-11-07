@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.1.0 — unreleased
+## 0.1.1 — unreleased
+
+- React Native: math renders with KaTeX 0.19.1 (fixes [GHSA-238p-pmpm-9mq7](https://github.com/advisories/GHSA-238p-pmpm-9mq7)),
+  with the matching stylesheet pinned in the WebView. Web math still uses Streamdown's KaTeX 0.16 until
+  `@streamdown/math` upgrades; `styles.css` now always carries that version's CSS (tested).
+- Dependabot: Streamdown packages grouped; majors of Streamdown and Shiki are upgraded by hand.
+
+## 0.1.0 — 2026-11-07
 
 First release.
 

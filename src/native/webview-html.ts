@@ -23,10 +23,14 @@ export const MERMAID_SCRIPT: ScriptSource = {
   integrity: 'sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2',
 };
 
-/** KaTeX's stylesheet (fonts load from the same place). Without it, math falls back to the browser's MathML. */
+/**
+ * KaTeX's stylesheet (fonts load from the same place). Without it, math falls back to the browser's MathML.
+ * Must be the same KaTeX version as the `katex` dependency that renders the formula (class names change between
+ * versions); a unit test checks this.
+ */
 export const KATEX_STYLESHEET: ScriptSource = {
-  url: 'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css',
-  integrity: 'sha384-nH0MfJ44wi1dd7w6jinlyBgljjS8EJAh2JBoRad8a3VDw2K69vfaaqm4WnR+gXtA',
+  url: 'https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css',
+  integrity: 'sha384-WwGtaC6ywCHxA5cstpj/3+xIZvTez8dq2IcBQaXRkenHZ7FVVq1ZROtURwfbtTlG',
 };
 
 export const ECHARTS_SCRIPT: ScriptSource = {
