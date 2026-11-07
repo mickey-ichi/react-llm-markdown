@@ -77,3 +77,23 @@ export function applyChartTextTheme(option: unknown, color: string): unknown {
   }
   return themed;
 }
+
+/** Series with more points than this get ECharts' large-data defaults. */
+export const LARGE_SERIES_THRESHOLD = 2_000;
+
+/**
+ * Defaults that keep a big chart responsive: line series sampled with LTTB (visually the same shape), no per-point
+ * symbols, and no animation when any series is large. Only fills keys the option did not set.
+ */
+export function applyLargeDataDefaults(option: unknown): unknown {
+  if (!isPlainRecord(option)) return option;
+  const list = Array.isArray(option.series) ? option.series : option.series === undefined ? [] : [option.series];
+  let large = false;
+  const series = list.map((entry) => {
+    if (!isPlainRecord(entry) || !Array.isArray(entry.data) || entry.data.length <= LARGE_SERIES_THRESHOLD) return entry;
+    large = true;
+    return entry.type === 'line' ? { sampling: 'lttb', showSymbol: false, ...entry } : entry;
+  });
+  if (!large) return option;
+  return { animation: false, ...option, series: Array.isArray(option.series) ? series : series[0] };
+}

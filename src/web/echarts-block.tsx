@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { CodeBlockCopyButton, type CustomRendererProps } from 'streamdown';
 
 import { parseEChartsSource } from '../core/echarts-security.ts';
-import { applyChartTextTheme } from '../core/echarts-theme.ts';
+import { applyChartTextTheme, applyLargeDataDefaults } from '../core/echarts-theme.ts';
 
 /** Re-read the text color once a light/dark color transition has settled. */
 const THEME_RECHECK_DELAY_MS = 350;
@@ -28,7 +28,7 @@ export function EChartsBlock({ code, isIncomplete }: CustomRendererProps) {
   const [runtimeFailedCode, setRuntimeFailedCode] = useState<string | null>(null);
   const parsed = useMemo(() => {
     try {
-      return { failed: false, option: parseEChartsSource(code) } as const;
+      return { failed: false, option: applyLargeDataDefaults(parseEChartsSource(code)) } as const;
     } catch {
       return { failed: true, option: null } as const;
     }

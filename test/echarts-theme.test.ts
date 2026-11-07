@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 
-import { applyChartTextTheme } from '../dist/web/index.js';
+import { applyChartTextTheme, applyLargeDataDefaults } from '../dist/web/index.js';
 import { expect } from './expect.ts';
 
 /**
@@ -140,5 +140,31 @@ describe('applyChartTextTheme', () => {
   it('returns non-object options unchanged', () => {
     expect(applyChartTextTheme(null, WHITE)).toBeNull();
     expect(applyChartTextTheme('string', WHITE)).toBe('string');
+  });
+});
+
+describe('applyLargeDataDefaults', () => {
+  const points = (n: number) => Array.from({ length: n }, (_, i) => [i, i % 5]);
+
+  it('samples big line series, hides symbols and turns animation off', () => {
+    const out = applyLargeDataDefaults({ series: [{ type: 'line', data: points(5_000) }, { type: 'bar', data: [1, 2] }] }) as {
+      animation: boolean;
+      series: Record<string, unknown>[];
+    };
+    expect(out.animation).toBe(false);
+    expect(out.series[0]!.sampling).toBe('lttb');
+    expect(out.series[0]!.showSymbol).toBe(false);
+    expect(out.series[1]!.sampling).toBeUndefined();
+  });
+
+  it('keeps what the option set, and leaves small charts alone', () => {
+    const custom = applyLargeDataDefaults({ animation: true, series: [{ type: 'line', sampling: 'average', data: points(3_000) }] }) as {
+      animation: boolean;
+      series: Record<string, unknown>[];
+    };
+    expect(custom.animation).toBe(true);
+    expect(custom.series[0]!.sampling).toBe('average');
+    const small = { series: [{ type: 'line', data: points(10) }] };
+    expect(applyLargeDataDefaults(small)).toBe(small);
   });
 });

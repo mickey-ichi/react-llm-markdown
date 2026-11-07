@@ -8,7 +8,7 @@
 | Run | 2026-11-07 |
 | Browser | Chromium (Playwright 1.65.0) |
 | Machine | darwin 25.6.0 arm64, Apple M2 |
-| Result | **97 passed**, 0 failed, 5 not applicable |
+| Result | **102 passed**, 0 failed, 5 not applicable |
 
 Three targets run the same inputs:
 
@@ -296,16 +296,16 @@ stretch the main thread was busy (a Long Tasks API entry).
 
 | ID | Case | Target | Render | Longest task | Typing | Result |
 |---|---|---|---|---|---|---|
-| PERF-01 | Long text (≈200 KB, 2,000 sections) | Web | 0.44 s | 0.29 s | 0.03 s | ✅ pass |
+| PERF-01 | Long text (≈200 KB, 2,000 sections) | Web | 0.45 s | 0.30 s | 0.01 s | ✅ pass |
 | PERF-01 | Long text (≈200 KB, 2,000 sections) | React Native | 0.48 s | 0.28 s | 0.01 s | ✅ pass |
-| PERF-02 | Large table (1,000 rows × 10 columns) | Web | 0.33 s | 0.19 s | 0.01 s | ✅ pass |
-| PERF-02 | Large table (1,000 rows × 10 columns) | React Native | 0.53 s | 0.30 s | 0.01 s | ✅ pass |
-| PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | Web | 0.25 s | 0.05 s | 0.01 s | ✅ pass |
+| PERF-02 | Large table (1,000 rows × 10 columns) | Web | 0.34 s | 0.19 s | 0.01 s | ✅ pass |
+| PERF-02 | Large table (1,000 rows × 10 columns) | React Native | 0.52 s | 0.31 s | 0.02 s | ✅ pass |
+| PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | Web | 0.27 s | 0.06 s | 0.01 s | ✅ pass |
 | PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | React Native | 0.11 s | 0.00 s | 0.01 s | ✅ pass |
-| PERF-04 | Large chart (20,000 points, the limit) | Web | 0.46 s | 0.15 s | 0.49 s | ✅ pass |
+| PERF-04 | Large chart (20,000 points, the limit) | Web | 0.23 s | 0.00 s | 0.01 s | ✅ pass |
 | PERF-04 | Large chart (20,000 points, the limit) | React Native | 0.13 s | 0.00 s | 0.01 s | ✅ pass |
 | PERF-05 | Same answer (200-row table + chart + diagram) 5 times | Web | 0.18 s, 0.11 s, 0.10 s, 0.10 s, 0.10 s | — | heap 14 → 14 → 14 → 14 → 14 MB | ✅ pass |
-| PERF-05 | Same answer (200-row table + chart + diagram) 5 times | React Native | 0.08 s, 0.05 s, 0.04 s, 0.05 s, 0.05 s | — | heap 23 → 23 → 23 → 23 → 23 MB | ✅ pass |
+| PERF-05 | Same answer (200-row table + chart + diagram) 5 times | React Native | 0.09 s, 0.05 s, 0.05 s, 0.05 s, 0.04 s | — | heap 21 → 21 → 21 → 21 → 21 MB | ✅ pass |
 
 ## Everything else
 
@@ -323,10 +323,15 @@ stretch the main thread was busy (a Long Tasks API entry).
 | React Native | the Copy button hands the code to onCopyCode | ✅ pass |
 | React Native | switching to dark recolors the text | ✅ pass |
 | React Native | streaming never shows raw Markdown and ends with a rendered table | ✅ pass |
+| site | the attack payloads preset runs nothing, on the web and in the phone | ✅ pass |
+| site | streaming reveals the answer and both previews follow it | ✅ pass |
+| site | a shared link restores the document | ✅ pass |
+| site | on a phone: no sideways scroll, sticky pane tabs, React Native without a device frame | ✅ pass |
 | WebView | Mermaid draws the diagram and reports its height | ✅ pass |
 | WebView | Mermaid ignores config overrides and keeps labels as text | ✅ pass |
 | WebView | a tampered script is refused (SRI) and the source is shown instead | ✅ pass |
 | WebView | ECharts draws the chart at the theme height, without HTML from the option | ✅ pass |
-| WebView | display math renders as MathML and \href stays inert | ✅ pass |
+| WebView | display math renders with KaTeX and \href stays inert | ✅ pass |
+| WebView | math falls back to MathML when the KaTeX stylesheet cannot load | ✅ pass |
 | WebView | the CSP blocks scripts from any other origin | ✅ pass |
 

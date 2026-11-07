@@ -33,13 +33,14 @@ without a break (Long Tasks API).
 | PERF-01 Long text | 0.48 s / 0.32 s / 0.02 s | 0.47 s / 0.27 s / 0.01 s |
 | PERF-02 Table 1,000 × 10 | 0.34 s / 0.20 s / 0.01 s | 0.52 s / 0.30 s / 0.01 s |
 | PERF-03 20 charts + 10 diagrams | 0.25 s / 0.05 s / 0.01 s | 0.12 s (source shown) |
-| PERF-04 20,000-point chart | 0.45 s / 0.15 s / 0.48 s | 0.14 s (source shown) |
+| PERF-04 20,000-point chart | 0.23 s / 0.00 s / 0.01 s | 0.14 s (source shown) |
 | PERF-05 Same answer × 5 | 0.10–0.18 s each, heap flat at 14 MB | 0.05–0.09 s each, heap flat at 21 MB |
 
 All within budget. Notes:
 
-- **PERF-04 on the web** is the closest to the budget: ECharts draws 20,000 points progressively over several frames,
-  so typing right after the chart appears waits up to about 0.5 s. Smaller charts are not affected (PERF-03).
+- **Large charts** get ECharts' large-data defaults when a series has more than 2,000 points: line series are sampled
+  with LTTB (the same shape on screen), per-point symbols are hidden and animation is off — unless the option sets
+  them itself. This took typing latency right after a 20,000-point chart from about 0.5 s to 0.01 s.
 - **React Native** is measured on the example app built for the web (react-native-web), so it shows the renderer's own
   cost — parsing, layout of native views, Shiki highlighting — but not Hermes on a phone, and not WebView drawing:
   without `react-native-webview` on the web, charts and diagrams show their source (hence the low PERF-03/04 numbers).

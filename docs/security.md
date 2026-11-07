@@ -95,12 +95,13 @@ Display math, Mermaid and ECharts are drawn in `react-native-webview` (only when
 
 - The content is passed as JSON in a `<script type="application/json">` with `<`, `>`, `&`, U+2028/2029 escaped —
   never as markup.
-- A Content-Security-Policy allows scripts only from the pinned script origin, no other network access, `img-src data:`.
-- Scripts load from pinned jsDelivr URLs with **Subresource Integrity** (a modified file is refused and the source is
-  shown). Self-host with the `scripts` prop.
+- A Content-Security-Policy allows scripts only from the pinned script origin (math: KaTeX's stylesheet and fonts only from
+  theirs), no other network access, `img-src data:`.
+- Scripts and the KaTeX stylesheet load from pinned jsDelivr URLs with **Subresource Integrity** (a modified file is
+  refused: diagrams and charts show their source, math falls back to MathML). Self-host with the `scripts` prop.
 - No navigation away from the document, no file access, no new windows; the page can only report its height.
 - Mermaid / ECharts options get the same hardening as on the web, applied in the app before the WebView sees them.
-  Math is rendered to MathML in the app (no script in that WebView).
+  Math is rendered by KaTeX in the app; its WebView runs no script from the network.
 
 ## Not covered
 

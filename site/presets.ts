@@ -86,7 +86,7 @@ ${fence('mermaid', 'erDiagram\n  CUSTOMER ||--o{ ORDER : places\n  ORDER ||--|{ 
 
 const MATH = `## Math, the way models write it
 
-Inline with \\( \\) — the area of a circle is \\( A = \\pi r^2 \\) — and display with \\[ \\]:
+Inline with \`\\( … \\)\` — the area of a circle is \\( A = \\pi r^2 \\) — and display with \`\\[ … \\]\`:
 
 \\[ \\int_0^\\infty e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2} \\]
 

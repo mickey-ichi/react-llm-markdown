@@ -7,7 +7,7 @@
  */
 import katex from 'katex';
 
-import { applyChartTextTheme } from '../core/echarts-theme.ts';
+import { applyChartTextTheme, applyLargeDataDefaults } from '../core/echarts-theme.ts';
 import { parseEChartsSource } from '../core/echarts-security.ts';
 import { KATEX_SECURITY_OPTIONS, MERMAID_CONFIG, stripMermaidSourceOverrides } from '../core/security.ts';
 import type { NativeTheme } from './theme.ts';
@@ -21,6 +21,12 @@ export interface ScriptSource {
 export const MERMAID_SCRIPT: ScriptSource = {
   url: 'https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.min.js',
   integrity: 'sha384-EOXBFmc3gx5mb+vn0vPvvGqACToJD24hhacX5Yx+8NUUQrHIle/Qi5Bg9o3zKwW2',
+};
+
+/** KaTeX's stylesheet (fonts load from the same place). Without it, math falls back to the browser's MathML. */
+export const KATEX_STYLESHEET: ScriptSource = {
+  url: 'https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css',
+  integrity: 'sha384-nH0MfJ44wi1dd7w6jinlyBgljjS8EJAh2JBoRad8a3VDw2K69vfaaqm4WnR+gXtA',
 };
 
 export const ECHARTS_SCRIPT: ScriptSource = {
@@ -65,30 +71,58 @@ export function isDarkTheme(theme: NativeTheme): boolean {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b < 128;
 }
 
-function page(theme: NativeTheme, body: string, script?: ScriptSource, extraStyle = ''): string {
+function page(
+  theme: NativeTheme,
+  body: string,
+  script?: ScriptSource,
+  extraStyle = '',
+  stylesheet?: ScriptSource,
+): string {
   const scriptSrc = script ? originOf(script.url) : "'none'";
+  const styleOrigin = stylesheet ? ` ${originOf(stylesheet.url)}` : '';
   // Without a matching color-scheme, a WebView (or iframe) on a dark screen paints an opaque white canvas.
   const scheme = isDarkTheme(theme) ? 'dark' : 'light';
+  const integrity = (source: ScriptSource) =>
+    source.integrity ? ` integrity="${escapeAttr(source.integrity)}" crossorigin="anonymous"` : '';
+  // The stylesheet decides how the page looks: hidden until it loads (or fails, which switches to the fallback).
+  const link = stylesheet
+    ? `<link rel="stylesheet" href="${escapeAttr(stylesheet.url)}"${integrity(stylesheet)} onload="document.documentElement.classList.add('css-ok');rlmReport()" onerror="document.documentElement.classList.add('css-failed');rlmReport()">`
+    : '';
   return `<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="color-scheme" content="${scheme}">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptSrc} 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; font-src data:">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptSrc} 'unsafe-inline'; style-src 'unsafe-inline'${styleOrigin}; img-src data:; font-src data:${styleOrigin}">
 <style>:root{color-scheme:${scheme}}html,body{margin:0;padding:0;background:transparent;color:${theme.foreground};font-family:-apple-system,system-ui,sans-serif}${extraStyle}</style>
-</head><body>${body}
 <script>${REPORT_HEIGHT}</script>
-${script ? `<script src="${escapeAttr(script.url)}"${script.integrity ? ` integrity="${escapeAttr(script.integrity)}" crossorigin="anonymous"` : ''}></script>` : ''}
+${link}
+</head><body>${body}
+${script ? `<script src="${escapeAttr(script.url)}"${integrity(script)}></script>` : ''}
 </body></html>`;
 }
 
-/** Display math, rendered here with KaTeX to MathML (no fonts or CSS needed in the WebView). */
-export function mathHtml(tex: string, theme: NativeTheme): string {
+/**
+ * Display math, rendered here with KaTeX (`trust: false` and the other limits). The WebView draws it with KaTeX's
+ * stylesheet and fonts from `stylesheet` (pinned, SRI); if that cannot load (offline), the MathML that KaTeX also
+ * emits is shown instead, so the formula is never lost.
+ */
+export function mathHtml(tex: string, theme: NativeTheme, stylesheet: ScriptSource = KATEX_STYLESHEET): string {
   const markup = katex.renderToString(tex, {
     ...KATEX_SECURITY_OPTIONS,
     displayMode: true,
-    output: 'mathml',
+    output: 'htmlAndMathml',
     throwOnError: false,
   });
-  return page(theme, `<div class="m">${markup}</div>`, undefined, `.m{padding:4px 0;font-size:${theme.fontSize + 2}px;overflow-x:auto}math{display:block}`);
+  return page(
+    theme,
+    `<div class="m">${markup}</div>`,
+    undefined,
+    `.m{padding:6px 0;font-size:${theme.fontSize}px;overflow-x:auto;overflow-y:hidden}.m .katex-display{margin:0}` +
+      // Until the stylesheet decides: nothing (no flash of the formula twice).
+      `html:not(.css-ok):not(.css-failed) .m{visibility:hidden}` +
+      // Fallback: the browser's own MathML.
+      `.css-failed .katex-html{display:none}.css-failed math{display:block}`,
+    stylesheet,
+  );
 }
 
 export function mermaidHtml(source: string, theme: NativeTheme, dark: boolean, script: ScriptSource = MERMAID_SCRIPT): string {
@@ -110,7 +144,7 @@ try{mermaid.initialize(d.config);mermaid.render('rlm-m',d.source).then(function(
  * the WebView. Throws when the fence is invalid; the caller then shows the source.
  */
 export function echartsHtml(code: string, theme: NativeTheme, script: ScriptSource = ECHARTS_SCRIPT): string {
-  const option = applyChartTextTheme(parseEChartsSource(code), toRgb(theme.foreground));
+  const option = applyChartTextTheme(applyLargeDataDefaults(parseEChartsSource(code)), toRgb(theme.foreground));
   const run = `function(){var o=JSON.parse(document.getElementById('d').textContent);var c=echarts.init(document.getElementById('c'),null,{renderer:'canvas'});c.setOption(o);window.addEventListener('resize',function(){c.resize()});rlmReport()}`;
   return page(
     theme,
