@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "react-llm-markdown",
+    "slug": "react-llm-markdown-example",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic"
+  }
+}

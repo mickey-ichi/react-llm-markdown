@@ -37,7 +37,8 @@ npx playwright install chromium   # once, for the end-to-end tests
 | `src/web/` | `MarkdownView` on Streamdown, the rehype URL policy, `styles.css` source |
 | `src/native/` | React Native renderer, Shiki highlighter, WebView documents |
 | `src/cli.ts`, `src/viewer/` | The `.md` viewer server and its page |
-| `example/` | Expo app used by the React Native e2e tests |
+| `e2e-app/` | Expo app the React Native e2e tests drive |
+| `examples/` | Next.js and React Native (Expo) example apps |
 | `site/` | Playground and documentation (GitHub Pages) |
 | `e2e/cases.ts` | Attack payloads and performance cases shared by every e2e suite |
 

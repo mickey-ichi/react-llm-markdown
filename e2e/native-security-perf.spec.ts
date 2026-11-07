@@ -11,13 +11,13 @@ import { expect, type Page, test } from '@playwright/test';
 import { INPUT_BUDGET_MS, PERF_CASES, REGRESSION_MARKDOWN, RENDER_BUDGET_MS, REPEAT_MARKDOWN, SECURITY_CASES } from './cases.ts';
 import { heapMb, interact, recordLongTasks, report, typingLatency, watch } from './harness.ts';
 
-const APP = join(import.meta.dirname, '..', 'example', 'dist-web');
+const APP = join(import.meta.dirname, '..', 'e2e-app', 'dist-web');
 let cases: string;
 let server: Server;
 let base: string;
 
 test.beforeAll(async () => {
-  if (!existsSync(join(APP, 'index.html'))) throw new Error('example/dist-web is missing: run `node scripts/build-example.mjs`');
+  if (!existsSync(join(APP, 'index.html'))) throw new Error('e2e-app/dist-web is missing: run `node scripts/build-example.mjs`');
   cases = mkdtempSync(join(tmpdir(), 'rlm-native-cases-'));
   server = createServer((req, res) => {
     const path = new URL(req.url ?? '/', 'http://x').pathname;

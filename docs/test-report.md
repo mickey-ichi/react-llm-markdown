@@ -13,7 +13,7 @@
 Three targets run the same inputs:
 
 - **Web**: `MarkdownView` from `react-llm-markdown`, in the CLI viewer (desktop Chrome viewport).
-- **React Native**: `MarkdownView` from `react-llm-markdown/native`, in the [example Expo app](../example/) built for
+- **React Native**: `MarkdownView` from `react-llm-markdown/native`, in the [Expo test app](../e2e-app/) built for
   the web with react-native-web (Pixel 7 viewport). `react-native-webview` has no web build, so math, Mermaid and
   ECharts show their source here.
 - **WebView**: the HTML documents the React Native renderer loads into `react-native-webview` for math, Mermaid

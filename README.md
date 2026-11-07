@@ -45,7 +45,7 @@ the rich blocks models use, repairs Markdown as it streams, and neutralizes the 
   ECharts charts from a JSON fence, CJK-aware emphasis.
 - **Streaming-ready** — half-written tables, code fences and emphasis render as if finished; no flashing `**`.
 - **Hardened by default** — sanitized HTML, a URL allowlist, DOM-clobbering protection, locked-down Mermaid and KaTeX,
-  an allowlist and limits for chart options, an image allowlist hook. Tested with 27 attack payloads in a real browser.
+  an allowlist and limits for chart options, an image allowlist hook. [Tested with 27 attack payloads in a real browser](https://mickey-ichi.github.io/react-llm-markdown/docs/test-report/).
 - **Web and React Native** — one package, one parser and one set of security rules; native views on the phone, with
   math, diagrams and charts in a sandboxed WebView. Works in Expo Go.
 - **Drop-in** — prebuilt, prefixed CSS (no Tailwind setup), light and dark themes, server rendering, plugins loaded on
@@ -94,6 +94,13 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 ```bash
 npx react-llm-markdown README.md
 ```
+
+### Examples
+
+| | |
+|---|---|
+| [Next.js](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/nextjs) | App Router chat page: a route handler streams the answer, `MarkdownView` renders it |
+| [React Native (Expo)](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/react-native) | One screen with a streamed answer, WebView blocks and a Copy button; runs in Expo Go |
 
 ## Documentation
 

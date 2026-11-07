@@ -1,4 +1,4 @@
-// React Native E2E: the Expo example app (example/App.tsx), built for the web by scripts/build-example.mjs, so the
+// React Native E2E: the Expo example app (e2e-app/App.tsx), built for the web by scripts/build-example.mjs, so the
 // native renderer (react-llm-markdown/native, through react-native-web) runs in a real browser on a phone viewport.
 // react-native-webview has no web implementation, so math / Mermaid / ECharts take their no-WebView path here;
 // webview.spec.ts covers the WebView documents themselves.
@@ -9,14 +9,14 @@ import { extname, join, normalize } from 'node:path';
 
 import { expect, type Page, test } from '@playwright/test';
 
-const DIST = join(import.meta.dirname, '..', 'example', 'dist-web');
+const DIST = join(import.meta.dirname, '..', 'e2e-app', 'dist-web');
 const TYPES: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.ico': 'image/x-icon', '.json': 'application/json' };
 
 let server: Server;
 let base: string;
 
 test.beforeAll(async () => {
-  if (!existsSync(join(DIST, 'index.html'))) throw new Error('example/dist-web is missing: run `node scripts/build-example.mjs`');
+  if (!existsSync(join(DIST, 'index.html'))) throw new Error('e2e-app/dist-web is missing: run `node scripts/build-example.mjs`');
   server = createServer((req, res) => {
     const path = normalize(decodeURIComponent(new URL(req.url ?? '/', 'http://x').pathname)).replace(/^(\.\.[/\\])+/, '');
     const file = join(DIST, path);

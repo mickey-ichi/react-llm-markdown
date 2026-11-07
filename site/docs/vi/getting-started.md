@@ -82,3 +82,12 @@ return <MarkdownView streaming={!done}>{text}</MarkdownView>;
 
 Trong lúc streaming, một `**bold` chưa đóng, một bảng dở dang hay một code fence còn mở đều render như đã hoàn chỉnh, và
 một marker chưa có chữ nào phía sau (`Hello **`) sẽ bị ẩn cho đến khi ký tự đầu tiên của nó về tới.
+
+## Ví dụ
+
+Các app hoàn chỉnh để tham khảo, mỗi app có README riêng:
+
+- [Next.js](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/nextjs) — trang chat App Router. Route handler stream câu trả lời; một client component đọc stream và
+  render bằng `MarkdownView`.
+- [React Native (Expo)](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/react-native) — một màn hình với câu trả lời được stream, công thức toán, sơ đồ và biểu đồ
+  trong WebView, nút Copy trên khối code. Chạy được trong Expo Go.

@@ -1,12 +1,12 @@
-// Packs this package exactly as npm would publish it, installs the tarball into example/ (the Expo app), and exports
-// the app for the web (example/dist-web), which the native end-to-end tests drive with Playwright.
+// Packs this package exactly as npm would publish it, installs the tarball into e2e-app/ (the Expo test app), and exports
+// the app for the web (e2e-app/dist-web), which the native end-to-end tests drive with Playwright.
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, readdirSync, renameSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const EXAMPLE = join(ROOT, 'example');
+const EXAMPLE = join(ROOT, 'e2e-app');
 const PACK = join(EXAMPLE, '.pack');
 const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';

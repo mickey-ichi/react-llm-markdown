@@ -6,7 +6,7 @@ On the web, `MarkdownView` is built on [Streamdown](https://streamdown.ai) (itse
 ecosystem as react-markdown). On top of it, this package adds:
 
 - hardening for untrusted model output — Mermaid and KaTeX locked down, an ECharts allowlist with limits, a stricter URL
-  policy, DOM-clobbering protection, an image allowlist hook — tested with 27 attack payloads;
+  policy, DOM-clobbering protection, an image allowlist hook — [tested with 27 attack payloads](test-report);
 - ECharts charts from a JSON fence, `\( \)` / `\[ \]` math, chat-style line breaks;
 - prebuilt, prefixed CSS (no Tailwind setup);
 - a **React Native** renderer with the same parser and policies, and a CLI viewer.

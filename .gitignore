@@ -9,14 +9,20 @@ build/
 dist/
 test-results/
 playwright-report/
-example/node_modules/
-example/.pack/
-example/dist-web/
-example/.expo/
-example/package-lock.json
+e2e-app/node_modules/
+e2e-app/.pack/
+e2e-app/dist-web/
+e2e-app/.expo/
+e2e-app/package-lock.json
 site-dist/
 
 # secrets (the e2e fixture .env is a deliberate dummy, checking that dotfiles are never served)
 .env
 .env.*
 !e2e/fixtures/doc/.env
+examples/*/node_modules/
+examples/*/package-lock.json
+examples/nextjs/.next/
+examples/nextjs/next-env.d.ts
+examples/react-native/.expo/
+examples/react-native/dist/

@@ -14,7 +14,7 @@ built to run script, phone home or mislead the reader. This library renders all 
   the layout and `**` never flashes on screen.
 - **LLM habits handled**: `\( … \)` / `\[ … \]` math, a single newline as a line break.
 - **Hardened by default**: sanitized HTML, a URL allowlist, locked-down Mermaid and KaTeX, an allowlist and limits for
-  chart options — tested with 27 attack payloads on every renderer.
+  chart options — [tested with 27 attack payloads](test-report) on every renderer.
 - **Web and native from one package**, sharing the same parser and security policies.
 
 ## Three entry points

@@ -46,7 +46,7 @@
   JSON のフェンスから描く ECharts のチャート、CJK に対応した強調。
 - **ストリーミング対応** —— 書きかけのテーブル、コードフェンス、強調も完成しているかのようにレンダリングされます。`**` がちらつくことはありません。
 - **デフォルトで堅牢** —— サニタイズされた HTML、URL の許可リスト、DOM clobbering 対策、制限をかけた Mermaid と KaTeX、
-  チャートのオプションに対する許可リストと上限、画像の許可リスト用フック。実際のブラウザで 27 種類の攻撃ペイロードを使ってテストしています。
+  チャートのオプションに対する許可リストと上限、画像の許可リスト用フック。[実際のブラウザで 27 種類の攻撃ペイロードを使ってテストしています](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/test-report/)。
 - **Web と React Native** —— 1 つのパッケージ、1 つのパーサー、1 つのセキュリティルール。スマートフォンではネイティブビューを使い、
   数式・ダイアグラム・チャートはサンドボックス化された WebView で描画します。Expo Go でも動作します。
 - **すぐに導入できる** —— ビルド済みでプレフィックス付きの CSS（Tailwind の設定は不要）、ライトテーマとダークテーマ、サーバーレンダリング、
@@ -95,6 +95,13 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 ```bash
 npx react-llm-markdown README.md
 ```
+
+### サンプル
+
+| | |
+|---|---|
+| [Next.js](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/nextjs) | App Router のチャットページ：ルートハンドラーが回答をストリーミングし、`MarkdownView` が描画します |
+| [React Native (Expo)](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/react-native) | ストリーミングされる回答、WebView ブロック、コピーボタンを備えた 1 画面のアプリ。Expo Go で動作します |
 
 ## ドキュメント
 

@@ -26,7 +26,7 @@ updates:
       - dependency-name: "@shikijs/*"
         update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
-    directory: /example
+    directory: /e2e-app
     schedule:
       interval: monthly
     groups:

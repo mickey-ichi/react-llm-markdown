@@ -82,3 +82,12 @@ return <MarkdownView streaming={!done}>{text}</MarkdownView>;
 
 ストリーミング中は、閉じられていない `**bold`、途中までのテーブル、開いたままのコードフェンスも完成しているかのようにレンダリングされます。
 また、まだテキストが続いていない記号（`Hello **`）は、最初の文字が届くまで非表示になります。
+
+## サンプル
+
+そのまま参考にできる完全なアプリです。それぞれに README があります。
+
+- [Next.js](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/nextjs) — App Router のチャットページ。ルートハンドラーが回答をストリーミングし、クライアントコンポーネントが
+  ストリームを読み取って `MarkdownView` で描画します。
+- [React Native (Expo)](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/react-native) — ストリーミングされる回答、WebView 内の数式・図・チャート、コードのコピーボタンを
+  備えた 1 画面のアプリ。Expo Go で動作します。
