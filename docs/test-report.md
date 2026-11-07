@@ -8,7 +8,7 @@
 | Run | 2026-11-07 |
 | Browser | Chromium (Playwright 1.65.0) |
 | Machine | darwin 25.6.0 arm64, Apple M2 |
-| Result | **102 passed**, 0 failed, 5 not applicable |
+| Result | **109 passed**, 0 failed, 7 not applicable |
 
 Three targets run the same inputs:
 
@@ -54,6 +54,9 @@ opened, the page did not navigate, and no dangerous element or URL is left in th
 | SEC-22 | Mermaid: %%{init}%% turning HTML labels and loose security back on | The directive is removed: `securityLevel: strict` and text labels stay; the label is never an element. | ✅ pass | ✅ pass | ✅ pass |
 | SEC-23 | Mermaid: frontmatter config and a reassembled directive | Frontmatter config and reassembled directives are removed, also inside a quote. | ✅ pass | ✅ pass | ✅ pass |
 | SEC-24 | KaTeX: \href, \includegraphics, \htmlClass, huge sizes and a macro bomb | `\href`, `\includegraphics`, `\htmlClass` render as errors; sizes are capped; the macro bomb stops. | ✅ pass | ✅ pass | — n/a |
+| SEC-26 | HTML: an id that would shadow a global (DOM clobbering) | The id and name get a `user-content-` prefix, so `window.__xss` stays unset. | ✅ pass | ✅ pass | — n/a |
+| SEC-27 | URLs: backslash and tab tricks the browser reads as //host | Refused like `//host`: no image is requested, the link is plain text. | ✅ pass | ✅ pass | — n/a |
+| SEC-28 | ECharts: a gauge with a huge splitNumber (would freeze the page) | `splitNumber` is capped at 100: the gauge draws at once and the page stays responsive. | ✅ pass | ✅ pass | ✅ pass |
 | SEC-25 | Ordinary content after hardening (table, math, currency, Mermaid, charts, sankey) | Renders normally | ✅ pass | ✅ pass | — |
 
 <details><summary>Payloads</summary>
@@ -286,6 +289,38 @@ $$\rule{500em}{500em}$$
 $$\def\a{\b\b}\def\b{\a\a}\a$$
 ````
 
+**SEC-26** HTML: an id that would shadow a global (DOM clobbering)
+
+````markdown
+Before.
+
+<div id="__xss">clobber</div>
+
+<a id="__xss" name="__xss">x</a>
+
+After.
+````
+
+**SEC-27** URLs: backslash and tab tricks the browser reads as //host
+
+````markdown
+Images:
+
+<img src="/\evil.example/b.png"> <img src="/&#9;/evil.example/t.png">
+
+[link](/\evil.example/l)
+````
+
+**SEC-28** ECharts: a gauge with a huge splitNumber (would freeze the page)
+
+````markdown
+```echarts
+{"series":[{"type":"gauge","splitNumber":100000000,"axisTick":{"splitNumber":100000000},"data":[{"value":50}]}]}
+```
+
+After the gauge.
+````
+
 </details>
 
 ## Performance
@@ -296,16 +331,16 @@ stretch the main thread was busy (a Long Tasks API entry).
 
 | ID | Case | Target | Render | Longest task | Typing | Result |
 |---|---|---|---|---|---|---|
-| PERF-01 | Long text (≈200 KB, 2,000 sections) | Web | 0.45 s | 0.30 s | 0.01 s | ✅ pass |
-| PERF-01 | Long text (≈200 KB, 2,000 sections) | React Native | 0.48 s | 0.28 s | 0.01 s | ✅ pass |
+| PERF-01 | Long text (≈200 KB, 2,000 sections) | Web | 0.46 s | 0.30 s | 0.03 s | ✅ pass |
+| PERF-01 | Long text (≈200 KB, 2,000 sections) | React Native | 0.51 s | 0.29 s | 0.01 s | ✅ pass |
 | PERF-02 | Large table (1,000 rows × 10 columns) | Web | 0.34 s | 0.19 s | 0.01 s | ✅ pass |
-| PERF-02 | Large table (1,000 rows × 10 columns) | React Native | 0.52 s | 0.31 s | 0.02 s | ✅ pass |
-| PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | Web | 0.27 s | 0.06 s | 0.01 s | ✅ pass |
-| PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | React Native | 0.11 s | 0.00 s | 0.01 s | ✅ pass |
+| PERF-02 | Large table (1,000 rows × 10 columns) | React Native | 0.56 s | 0.32 s | 0.02 s | ✅ pass |
+| PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | Web | 0.27 s | 0.05 s | 0.00 s | ✅ pass |
+| PERF-03 | Many rich blocks (20 ECharts + 10 Mermaid) | React Native | 0.12 s | 0.05 s | 0.01 s | ✅ pass |
 | PERF-04 | Large chart (20,000 points, the limit) | Web | 0.23 s | 0.00 s | 0.01 s | ✅ pass |
-| PERF-04 | Large chart (20,000 points, the limit) | React Native | 0.13 s | 0.00 s | 0.01 s | ✅ pass |
-| PERF-05 | Same answer (200-row table + chart + diagram) 5 times | Web | 0.18 s, 0.11 s, 0.10 s, 0.10 s, 0.10 s | — | heap 14 → 14 → 14 → 14 → 14 MB | ✅ pass |
-| PERF-05 | Same answer (200-row table + chart + diagram) 5 times | React Native | 0.09 s, 0.05 s, 0.05 s, 0.05 s, 0.04 s | — | heap 21 → 21 → 21 → 21 → 21 MB | ✅ pass |
+| PERF-04 | Large chart (20,000 points, the limit) | React Native | 0.14 s | 0.05 s | 0.01 s | ✅ pass |
+| PERF-05 | Same answer (200-row table + chart + diagram) 5 times | Web | 0.20 s, 0.11 s, 0.10 s, 0.11 s, 0.10 s | — | heap 14 → 14 → 14 → 14 → 14 MB | ✅ pass |
+| PERF-05 | Same answer (200-row table + chart + diagram) 5 times | React Native | 0.09 s, 0.05 s, 0.05 s, 0.05 s, 0.05 s | — | heap 25 → 25 → 25 → 25 → 25 MB | ✅ pass |
 
 ## Everything else
 

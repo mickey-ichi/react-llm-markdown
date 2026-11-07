@@ -161,7 +161,8 @@ function stripBlockedEChartsKeys(value: unknown): unknown {
   if (!isPlainRecord(value)) return value;
   const result: UnknownRecord = {};
   for (const [key, item] of Object.entries(value)) {
-    if (ECHARTS_BLOCKED_KEYS.has(key) && !(key === 'link' && Array.isArray(item))) continue;
+    // An array `link` is kept only as `axisPointer.link` (objects naming axes); strings in it could be URLs.
+    if (ECHARTS_BLOCKED_KEYS.has(key) && !(key === 'link' && Array.isArray(item) && item.every(isPlainRecord))) continue;
     // With the links gone, `nodeClick: 'link'` would open nothing; disable it.
     if (key === 'nodeClick' && item === 'link') {
       result[key] = false;
@@ -169,6 +170,31 @@ function stripBlockedEChartsKeys(value: unknown): unknown {
     }
     const cleaned = stripBlockedEChartsKeys(item);
     if (cleaned !== undefined) result[key] = cleaned;
+  }
+  return result;
+}
+
+/** Axis components whose `interval` / `minInterval` / `maxInterval` set the tick step. */
+const AXIS_KEYS = new Set(['xAxis', 'yAxis', 'radiusAxis', 'angleAxis', 'singleAxis', 'parallelAxis']);
+const AXIS_STEP_KEYS = new Set(['interval', 'minInterval', 'maxInterval']);
+/** Most ticks / splits ECharts is asked to draw for one axis or gauge. */
+export const ECHARTS_MAX_SPLIT_NUMBER = 100;
+
+/**
+ * Numbers that make ECharts loop: `splitNumber` (gauge, axes, radar) is capped, and an axis tick step is removed
+ * (`yAxis: {max: 1e9, interval: 1}` would draw a billion ticks), letting ECharts pick its own.
+ */
+function capLoopCounts(value: unknown, parentKey = ''): unknown {
+  if (Array.isArray(value)) return value.map((item) => capLoopCounts(item, parentKey));
+  if (!isPlainRecord(value)) return value;
+  const result: UnknownRecord = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (key === 'splitNumber' && typeof item === 'number') {
+      result[key] = Math.max(0, Math.min(item, ECHARTS_MAX_SPLIT_NUMBER));
+      continue;
+    }
+    if (AXIS_KEYS.has(parentKey) && AXIS_STEP_KEYS.has(key)) continue;
+    result[key] = capLoopCounts(item, key);
   }
   return result;
 }
@@ -216,7 +242,7 @@ export function restrictEChartsOption(option: UnknownRecord): UnknownRecord {
     if (!ECHARTS_ALLOWED_OPTION_KEYS.has(key)) continue;
     restricted[key] = key === 'series' ? allowedSeries(item) : key === 'title' ? withoutTitleLinks(item) : item;
   }
-  const stripped = stripBlockedEChartsKeys(restricted) as UnknownRecord;
+  const stripped = capLoopCounts(stripBlockedEChartsKeys(restricted)) as UnknownRecord;
   const series = Array.isArray(stripped.series) ? stripped.series : [];
   if (series.length > ECHARTS_LIMITS.maxSeries) {
     throw new EChartsLimitError(`ECharts option has ${series.length} series`);

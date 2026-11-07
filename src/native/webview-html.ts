@@ -59,9 +59,9 @@ export function toRgb(color: string): string {
 
 const escapeAttr = (value: string) => value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-/** `https://host:port` of a script URL (React Native's URL has no `origin`). */
-function originOf(url: string): string {
-  return /^https:\/\/[^/?#\s'";]+/i.exec(url)?.[0] ?? "'none'";
+/** A CSP source for an https URL (exact path), or 'none' for anything else. */
+function sourceOf(url: string): string {
+  return /^https:\/\/[^\s'";,]+$/i.test(url) ? url : "'none'";
 }
 
 const REPORT_HEIGHT = `function rlmReport(){var h=Math.ceil(document.documentElement.getBoundingClientRect().height);if(window.ReactNativeWebView)window.ReactNativeWebView.postMessage(JSON.stringify({height:h}))}
@@ -82,8 +82,11 @@ function page(
   extraStyle = '',
   stylesheet?: ScriptSource,
 ): string {
-  const scriptSrc = script ? originOf(script.url) : "'none'";
-  const styleOrigin = stylesheet ? ` ${originOf(stylesheet.url)}` : '';
+  // Exactly the pinned files, not their whole CDN: nothing else from that host can load.
+  const scriptSrc = script ? sourceOf(script.url) : "'none'";
+  const styleSrc = stylesheet ? ` ${sourceOf(stylesheet.url)}` : '';
+  // KaTeX's fonts sit next to its stylesheet.
+  const fontSrc = stylesheet ? ` ${sourceOf(stylesheet.url.slice(0, stylesheet.url.lastIndexOf('/') + 1))}fonts/` : '';
   // Without a matching color-scheme, a WebView (or iframe) on a dark screen paints an opaque white canvas.
   const scheme = isDarkTheme(theme) ? 'dark' : 'light';
   const integrity = (source: ScriptSource) =>
@@ -95,7 +98,7 @@ function page(
   return `<!doctype html><html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <meta name="color-scheme" content="${scheme}">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptSrc} 'unsafe-inline'; style-src 'unsafe-inline'${styleOrigin}; img-src data:; font-src data:${styleOrigin}">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src ${scriptSrc} 'unsafe-inline'; style-src 'unsafe-inline'${styleSrc}; img-src data:; font-src data:${fontSrc}">
 <style>:root{color-scheme:${scheme}}html,body{margin:0;padding:0;background:transparent;color:${theme.foreground};font-family:-apple-system,system-ui,sans-serif}${extraStyle}</style>
 <script>${REPORT_HEIGHT}</script>
 ${link}

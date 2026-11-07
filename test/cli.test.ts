@@ -4,7 +4,9 @@ import type { AddressInfo } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { createViewerServer, fileInRoot, main, pageHtml, resolveTarget } from '../dist/cli.js';
+import { request } from 'node:http';
+
+import { createViewerServer, fileInRoot, isAllowedHost, main, pageHtml, resolveTarget } from '../dist/cli.js';
 import { expect } from './expect.ts';
 
 let dir: string;
@@ -87,6 +89,38 @@ describe('viewer server', () => {
       expect((await get('/.env')).status).toBe(404);
       expect((await get('/__rlm/../cli.js')).status).toBe(404);
       expect((await fetch(base + '/', { method: 'POST' })).status).toBe(405);
+    } finally {
+      server.closeAllConnections();
+      await new Promise((done) => server.close(done));
+    }
+  });
+});
+
+describe('Host check (DNS rebinding)', () => {
+  it('accepts only loopback names on the right port', () => {
+    expect(isAllowedHost('127.0.0.1:4000', 4000)).toBe(true);
+    expect(isAllowedHost('localhost:4000', 4000)).toBe(true);
+    expect(isAllowedHost('evil.example:4000', 4000)).toBe(false);
+    expect(isAllowedHost('127.0.0.1:4001', 4000)).toBe(false);
+    expect(isAllowedHost(undefined, 4000)).toBe(false);
+  });
+
+  it('refuses a request whose Host is another name, even on 127.0.0.1', async () => {
+    const server = createViewerServer(resolveTarget('docs', dir));
+    await new Promise<void>((done) => server.listen(0, '127.0.0.1', done));
+    const port = (server.address() as AddressInfo).port;
+    const status = (host: string) =>
+      new Promise<number>((done, fail) => {
+        request({ host: '127.0.0.1', port, path: '/__rlm/doc?path=%2F', headers: { host } }, (res) => {
+          res.resume();
+          done(res.statusCode ?? 0);
+        })
+          .on('error', fail)
+          .end();
+      });
+    try {
+      expect(await status(`evil.example:${port}`)).toBe(403);
+      expect(await status(`127.0.0.1:${port}`)).toBe(200);
     } finally {
       server.closeAllConnections();
       await new Promise((done) => server.close(done));

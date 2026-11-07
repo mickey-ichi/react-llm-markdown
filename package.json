@@ -33,6 +33,9 @@
     "expo"
   ],
   "type": "module",
+  "main": "./dist/web/index.js",
+  "types": "./dist/web/index.d.ts",
+  "react-native": "./dist/native/index.js",
   "sideEffects": [
     "**/*.css"
   ],

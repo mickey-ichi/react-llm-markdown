@@ -30,11 +30,11 @@ without a break (Long Tasks API).
 
 | Case | Web: render / longest task / typing | React Native: render / longest task / typing |
 |---|---|---|
-| PERF-01 Long text | 0.48 s / 0.32 s / 0.02 s | 0.47 s / 0.27 s / 0.01 s |
-| PERF-02 Table 1,000 × 10 | 0.34 s / 0.20 s / 0.01 s | 0.52 s / 0.30 s / 0.01 s |
-| PERF-03 20 charts + 10 diagrams | 0.25 s / 0.05 s / 0.01 s | 0.12 s (source shown) |
+| PERF-01 Long text | 0.46 s / 0.30 s / 0.03 s | 0.51 s / 0.29 s / 0.01 s |
+| PERF-02 Table 1,000 × 10 | 0.34 s / 0.19 s / 0.01 s | 0.56 s / 0.32 s / 0.02 s |
+| PERF-03 20 charts + 10 diagrams | 0.27 s / 0.05 s / 0.00 s | 0.12 s (source shown) |
 | PERF-04 20,000-point chart | 0.23 s / 0.00 s / 0.01 s | 0.14 s (source shown) |
-| PERF-05 Same answer × 5 | 0.10–0.18 s each, heap flat at 14 MB | 0.05–0.09 s each, heap flat at 21 MB |
+| PERF-05 Same answer × 5 | 0.10–0.20 s each, heap flat at 14 MB | 0.05–0.09 s each, heap flat at 25 MB |
 
 All within budget. Notes:
 

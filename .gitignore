@@ -15,3 +15,8 @@ example/dist-web/
 example/.expo/
 example/package-lock.json
 site-dist/
+
+# secrets (the e2e fixture .env is a deliberate dummy, checking that dotfiles are never served)
+.env
+.env.*
+!e2e/fixtures/doc/.env

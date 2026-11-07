@@ -60,7 +60,16 @@ const ALIASES: Record<string, string> = {
 export function createCodeHighlighter(languages: LanguageRegistration[][] = DEFAULT_LANGUAGES): CodeHighlighter {
   let highlighter: HighlighterCore | null | undefined;
   const loaded = new Set<string>();
+  // Streaming re-renders every block on every chunk; finished blocks come from here instead of Shiki.
+  const cache = new Map<string, CodeLine[] | null>();
+  const remember = (key: string, lines: CodeLine[] | null) => {
+    if (cache.size >= 200) cache.delete(cache.keys().next().value!);
+    cache.set(key, lines);
+    return lines;
+  };
   return (code, language, scheme) => {
+    const key = `${scheme}\u0000${language}\u0000${code}`;
+    if (cache.has(key)) return cache.get(key)!;
     if (highlighter === undefined) {
       try {
         highlighter = createHighlighterCoreSync({
@@ -74,15 +83,15 @@ export function createCodeHighlighter(languages: LanguageRegistration[][] = DEFA
       }
     }
     const lang = ALIASES[language.toLowerCase()] ?? language.toLowerCase();
-    if (!highlighter || !loaded.has(lang)) return null;
+    if (!highlighter || !loaded.has(lang)) return remember(key, null);
     try {
       const { tokens } = highlighter.codeToTokens(code, {
         lang,
         theme: scheme === 'dark' ? 'github-dark' : 'github-light',
       });
-      return tokens.map((line) => line.map((token) => ({ content: token.content, color: token.color })));
+      return remember(key, tokens.map((line) => line.map((token) => ({ content: token.content, color: token.color }))));
     } catch {
-      return null;
+      return remember(key, null);
     }
   };
 }

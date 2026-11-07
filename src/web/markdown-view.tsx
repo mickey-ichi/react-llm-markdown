@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { type Components, defaultRehypePlugins, defaultRemarkPlugins, type PluginConfig, Streamdown } from 'streamdown';
 
-import { ROOT_CLASS, SAFE_COMPONENTS } from './components.tsx';
+import { imageWithPolicy, ROOT_CLASS, SAFE_COMPONENTS } from './components.tsx';
 import { featureKey, getCachedMarkdownPlugins, loadMarkdownPlugins, type MarkdownFeatures } from './plugins.ts';
 import type { PluggableList } from 'unified';
 
@@ -53,6 +53,11 @@ export interface MarkdownViewProps {
   codeBlockMaxHeight?: number | string;
   /** Show line numbers in code blocks. Default `true`. */
   lineNumbers?: boolean;
+  /**
+   * Which images may load. Default: every http(s) / relative image. A refused image shows its alt text and is never
+   * requested, e.g. `(url) => url.startsWith('https://cdn.example.com/')`.
+   */
+  isImageAllowed?: (url: string) => boolean;
 }
 
 /**
@@ -72,6 +77,7 @@ export function MarkdownView({
   tableMaxHeight = 300,
   codeBlockMaxHeight = 400,
   lineNumbers = true,
+  isImageAllowed,
 }: MarkdownViewProps) {
   const key = featureKey(features);
   const [loaded, setLoaded] = useState<{ key: string; plugins: PluginConfig } | undefined>(() => {
@@ -93,10 +99,10 @@ export function MarkdownView({
 
   // Streamdown repairs incomplete Markdown itself (parseIncompleteMarkdown), so no `streaming` here.
   const content = useMemo(() => prepareMarkdown(children), [children]);
-  const mergedComponents = useMemo(
-    () => (components ? { ...SAFE_COMPONENTS, ...components } : SAFE_COMPONENTS),
-    [components],
-  );
+  const mergedComponents = useMemo(() => {
+    const base = isImageAllowed ? { ...SAFE_COMPONENTS, img: imageWithPolicy(isImageAllowed) } : SAFE_COMPONENTS;
+    return components ? { ...base, ...components } : base;
+  }, [components, isImageAllowed]);
 
   return (
     <div className={className ? `${ROOT_CLASS} ${className}` : ROOT_CLASS}>
