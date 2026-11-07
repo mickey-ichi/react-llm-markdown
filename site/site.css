@@ -359,16 +359,20 @@ select {
   box-shadow: 0 0 0 1px var(--rule);
 }
 
+.phone-status {
+  display: flex;
+  height: 40px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel);
+}
+
 .phone-island {
-  position: absolute;
-  z-index: 2;
-  top: 10px;
-  left: 50%;
   width: 96px;
   height: 26px;
   border-radius: 20px;
   background: var(--bezel);
-  transform: translateX(-50%);
 }
 
 .note {
@@ -397,18 +401,16 @@ select {
   letter-spacing: -0.01em;
 }
 
-.install pre {
-  margin: 0 0 10px;
-  overflow-x: auto;
-  padding: 12px 14px;
+.install .rlm-markdown [data-streamdown='code-block'] {
+  margin-block: 0 12px;
   border: 1px solid var(--rule);
-  border-radius: 10px;
-  background: var(--panel);
-  font: 12.5px/1.55 var(--mono);
-  white-space: pre;
 }
 
-.install p {
+.install {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 0.9fr);
+}
+
+.install .rlm-markdown p {
   margin: 0;
   color: var(--graphite);
 }
@@ -440,22 +442,74 @@ select {
     padding-right: 16px;
   }
 
+  /* One row of examples that scrolls sideways, edge to edge. */
+  .presets {
+    flex-wrap: nowrap;
+    margin: 0 -16px;
+    overflow-x: auto;
+    padding: 0 16px 2px;
+    scrollbar-width: none;
+  }
+
+  .presets::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip {
+    flex: none;
+  }
+
+  .controls {
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+
+  .stream {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .speed {
+    padding-left: 0;
+  }
+
+  .speed-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  /* The pane switcher stays in reach while the page scrolls. */
   .tabs {
+    position: sticky;
+    z-index: 10;
+    top: 0;
     display: flex;
     gap: 4px;
-    margin-bottom: 12px;
-    padding: 4px;
-    border-radius: 10px;
-    background: var(--panel);
-    border: 1px solid var(--rule);
+    margin: 0 -16px 12px;
+    padding: 8px 16px;
+    background: color-mix(in srgb, var(--fog) 92%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .tabs::after {
+    position: absolute;
+    right: 16px;
+    bottom: 0;
+    left: 16px;
+    border-bottom: 1px solid var(--rule);
+    content: '';
   }
 
   .tabs button {
     flex: 1;
-    height: 32px;
-    border: 0;
-    border-radius: 7px;
-    background: transparent;
+    height: 36px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--panel);
     font-size: 13.5px;
     font-weight: 500;
     cursor: pointer;
@@ -471,10 +525,47 @@ select {
     height: auto;
   }
 
+  /* Panes grow with their content and the page does the scrolling (no scroll inside a scroll). */
   .pane {
     display: none;
-    height: min(78vh, 760px);
+    min-height: 60vh;
   }
+
+  .pane-source textarea {
+    min-height: 70vh;
+    flex: none;
+    field-sizing: content;
+  }
+
+  .browser-bar {
+    display: none;
+  }
+
+  .browser,
+  .browser-body {
+    overflow: visible;
+  }
+
+  .browser-body {
+    padding: 18px 16px 28px;
+  }
+
+  .pane-phone {
+    align-items: stretch;
+  }
+
+  .device-bare {
+    padding: 18px 16px 28px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: var(--panel);
+  }
+
+  .note {
+    max-width: none;
+  }
+
+
 
   .panes[data-pane='source'] .pane-source,
   .panes[data-pane='web'] .pane-web,
@@ -482,12 +573,12 @@ select {
     display: flex;
   }
 
-  .phone {
-    width: min(372px, 100%);
-  }
-
   .install {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .install .rlm-markdown [data-streamdown='code-block-body'] {
+    font-size: 12.5px;
   }
 }
 

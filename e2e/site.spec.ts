@@ -83,3 +83,24 @@ test('a shared link restores the document', async ({ page }) => {
   await page.reload();
   await expect(page.locator('.pane-web h1')).toHaveText('Shared heading');
 });
+
+test('on a phone: no sideways scroll, sticky pane tabs, React Native without a device frame', async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  await page.goto(base);
+  await expect(page.locator('.pane-web .rlm-markdown h1')).toBeVisible();
+  const overflow = () => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(await overflow()).toBeLessThanOrEqual(0);
+
+  await page.getByRole('tab', { name: 'React Native' }).click();
+  await expect(page.locator('.device-bare')).toBeVisible();
+  await expect(page.locator('.phone')).toHaveCount(0);
+  expect(await overflow()).toBeLessThanOrEqual(0);
+
+  // Scroll far down: the tabs stay at the top of the screen.
+  await page.mouse.wheel(0, 2_000);
+  await page.waitForTimeout(300);
+  const top = await page.getByRole('tablist').evaluate((el) => el.getBoundingClientRect().top);
+  expect(top).toBeLessThanOrEqual(1);
+  await context.close();
+});

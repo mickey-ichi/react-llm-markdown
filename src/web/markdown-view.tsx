@@ -51,6 +51,8 @@ export interface MarkdownViewProps {
   tableMaxHeight?: number | string;
   /** Code blocks taller than this scroll inside (px or CSS length; `0` = no limit). Default `400`. */
   codeBlockMaxHeight?: number | string;
+  /** Show line numbers in code blocks. Default `true`. */
+  lineNumbers?: boolean;
 }
 
 /**
@@ -69,6 +71,7 @@ export function MarkdownView({
   components,
   tableMaxHeight = 300,
   codeBlockMaxHeight = 400,
+  lineNumbers = true,
 }: MarkdownViewProps) {
   const key = featureKey(features);
   const [loaded, setLoaded] = useState<{ key: string; plugins: PluginConfig } | undefined>(() => {
@@ -108,6 +111,7 @@ export function MarkdownView({
           mermaid: { copy: true, download: false, fullscreen: true, panZoom: false },
           table: false,
         }}
+        lineNumbers={lineNumbers}
         mermaid={{ config: MERMAID_CONFIG }}
         mode={streaming ? 'streaming' : 'static'}
         parseIncompleteMarkdown={streaming}

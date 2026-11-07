@@ -143,6 +143,14 @@ describe('MarkdownView (SSR)', () => {
     expect(html).toMatch(/<span>js<\/span>/);
   });
 
+  it('can hide line numbers in code blocks', () => {
+    const md = ['```bash', 'npm install react-llm-markdown', '```'].join('\n');
+    const withNumbers = renderToStaticMarkup(createElement(MarkdownView, { children: md }));
+    const without = renderToStaticMarkup(createElement(MarkdownView, { lineNumbers: false, children: md }));
+    expect(withNumbers).toContain('counter(line)');
+    expect(without).not.toContain('counter(line)');
+  });
+
   it('accepts extra component overrides', () => {
     const html = renderToStaticMarkup(
       createElement(MarkdownView, { components: { hr: () => createElement('hr', { className: 'custom' }) }, children: '---' }),
