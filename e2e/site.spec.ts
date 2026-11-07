@@ -106,7 +106,7 @@ test('on a phone: no sideways scroll, sticky pane tabs, React Native without a d
   await context.close();
 });
 
-const DOC_SLUGS = ['introduction', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'faq', 'security', 'performance', 'test-report', 'changelog'];
+const DOC_SLUGS = ['introduction', 'comparison', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'faq', 'security', 'performance', 'test-report', 'changelog'];
 
 test.describe('documentation', () => {
   test('every page renders, its table of contents matches its headings, and its links lead somewhere', async ({ page, request }) => {

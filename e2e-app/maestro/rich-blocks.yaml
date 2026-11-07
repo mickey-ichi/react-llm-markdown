@@ -1,0 +1,14 @@
+# Math, Mermaid and ECharts draw in WebViews that load pinned scripts (SRI) from the CDN. The Mermaid labels are SVG
+# text inside the WebView, so seeing them proves the WebView ran the diagram under its Content-Security-Policy.
+appId: dev.reactllmmarkdown.e2e
+name: WebView blocks
+---
+- runFlow: common/launch.yaml
+- scrollUntilVisible:
+    element: Start
+    timeout: 60000
+- assertVisible: Done
+- takeScreenshot: native-rich-blocks
+- scrollUntilVisible:
+    element: The footnote.
+- takeScreenshot: native-bottom

@@ -1,0 +1,16 @@
+# The demo document renders with native views: headings, emphasis, a table, lists, a quote, highlighted code.
+appId: dev.reactllmmarkdown.e2e
+name: Native views
+---
+- runFlow: common/launch.yaml
+- assertVisible: Name
+- assertVisible: alpha
+- assertVisible: '22'
+- takeScreenshot: native-top
+- scrollUntilVisible:
+    element: A quote.
+- assertVisible: first
+- assertVisible: todo
+- scrollUntilVisible:
+    element: '(?s).*hello\(name: string\).*'
+- takeScreenshot: native-code

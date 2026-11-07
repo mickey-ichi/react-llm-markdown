@@ -24,13 +24,22 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-dark.png">
-    <img alt="Web レンダラー：テーブル、ハイライトされたコード、KaTeX の数式、Mermaid のダイアグラム、ECharts のチャート" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="540">
+    <img alt="Web レンダラー：テーブル、ハイライトされたコード、KaTeX の数式、Mermaid のダイアグラム、ECharts のチャート" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="620">
   </picture>
-  &nbsp;
+</p>
+
+<p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-dark.png">
-    <img alt="スマートフォン上の React Native レンダラー：テーブル、リスト、ハイライトされたコード" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-light.png" width="236">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-dark.png">
+    <img alt="iPhone（iOS 18 シミュレーター）：ハイライトされたコード、KaTeX の数式、WebView で描画した Mermaid の図と ECharts のグラフ" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-light.png" width="240">
   </picture>
+  &nbsp;&nbsp;
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-dark.png">
+    <img alt="Android 14 エミュレーター：見出し、テーブル、リスト、ハイライトされたコード、数式、Mermaid の図" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-light.png" width="240">
+  </picture>
+  <br>
+  <sub>Web · iPhone（iOS 18 シミュレーター）· Android 14 エミュレーター — E2E テストで撮影</sub>
 </p>
 
 ## なぜ必要か
@@ -107,6 +116,7 @@ npx react-llm-markdown README.md
 
 | | |
 |---|---|
+| [比較](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/comparison/) | react-markdown、Streamdown、React Native 向けレンダラーとの比較 |
 | [スタートガイド](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/getting-started/) | インストール、回答のストリーミング |
 | [Web レンダラー](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/web/) | props、画像、テーマ、要素の上書き、SSR |
 | [React Native レンダラー](https://mickey-ichi.github.io/react-llm-markdown/ja/docs/react-native/) | props、WebView ブロック、ハイライト、リンク、セルフホスト |
@@ -124,6 +134,7 @@ npx react-llm-markdown README.md
 | フレームワーク | Next.js（App Router と Pages）、Vite、Remix、その他あらゆる React 環境 |
 | TypeScript | 型定義を同梱。`bundler`、`node16`、`node10` の解決方式に対応 |
 | Node.js（CLI） | 20 以降 |
+| テスト環境 | Chromium（Web と React Native Web）、変更ごとに [iOS 18 シミュレーターと Android 14 エミュレーター](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/native-device.yml) |
 
 ## セキュリティ
 

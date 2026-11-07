@@ -10,11 +10,13 @@ import performance from '../docs/performance.md';
 import security from '../docs/security.md';
 import testReport from '../docs/test-report.md';
 import cli from './docs/cli.md';
+import comparison from './docs/comparison.md';
 import core from './docs/core.md';
 import faq from './docs/faq.md';
 import gettingStarted from './docs/getting-started.md';
 import introduction from './docs/introduction.md';
 import jaCli from './docs/ja/cli.md';
+import jaComparison from './docs/ja/comparison.md';
 import jaCore from './docs/ja/core.md';
 import jaFaq from './docs/ja/faq.md';
 import jaGettingStarted from './docs/ja/getting-started.md';
@@ -25,6 +27,7 @@ import jaWeb from './docs/ja/web.md';
 import reactNative from './docs/react-native.md';
 import richBlocks from './docs/rich-blocks.md';
 import viCli from './docs/vi/cli.md';
+import viComparison from './docs/vi/comparison.md';
 import viCore from './docs/vi/core.md';
 import viFaq from './docs/vi/faq.md';
 import viGettingStarted from './docs/vi/getting-started.md';
@@ -38,16 +41,17 @@ import { type Locale, LOCALE_NAMES, LOCALE_SHORT, LOCALES, localeFromPath, PAGE_
 const REPO = 'https://github.com/mickey-ichi/react-llm-markdown';
 
 /** Guide pages exist in every language; project pages are the repo's English files. */
-const GUIDE = ['introduction', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'faq'] as const;
+const GUIDE = ['introduction', 'comparison', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'faq'] as const;
 const PROJECT = ['security', 'performance', 'test-report', 'changelog'] as const;
 const SLUGS: readonly string[] = [...GUIDE, ...PROJECT];
 type GuideSlug = (typeof GUIDE)[number];
 type ProjectSlug = (typeof PROJECT)[number];
 
 const GUIDE_CONTENT: Record<Locale, Record<GuideSlug, string>> = {
-  en: { introduction, 'getting-started': gettingStarted, web, 'react-native': reactNative, 'rich-blocks': richBlocks, core, cli, faq },
+  en: { introduction, comparison, 'getting-started': gettingStarted, web, 'react-native': reactNative, 'rich-blocks': richBlocks, core, cli, faq },
   vi: {
     introduction: viIntroduction,
+    comparison: viComparison,
     'getting-started': viGettingStarted,
     web: viWeb,
     'react-native': viReactNative,
@@ -58,6 +62,7 @@ const GUIDE_CONTENT: Record<Locale, Record<GuideSlug, string>> = {
   },
   ja: {
     introduction: jaIntroduction,
+    comparison: jaComparison,
     'getting-started': jaGettingStarted,
     web: jaWeb,
     'react-native': jaReactNative,

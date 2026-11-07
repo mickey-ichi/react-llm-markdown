@@ -24,13 +24,22 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-dark.png">
-    <img alt="Web renderer: a table, highlighted code, KaTeX math, a Mermaid diagram and an ECharts chart" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="540">
+    <img alt="Web renderer: a table, highlighted code, KaTeX math, a Mermaid diagram and an ECharts chart" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/web-light.png" width="620">
   </picture>
-  &nbsp;
+</p>
+
+<p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-dark.png">
-    <img alt="React Native renderer on a phone: a table, lists and highlighted code" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/native-light.png" width="236">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-dark.png">
+    <img alt="An iPhone (iOS 18 simulator): highlighted code, KaTeX math, a Mermaid diagram and an ECharts chart drawn in WebViews" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/ios-light.png" width="240">
   </picture>
+  &nbsp;&nbsp;
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-dark.png">
+    <img alt="An Android 14 emulator: headings, a table, lists, highlighted code, math and a Mermaid diagram" src="https://raw.githubusercontent.com/mickey-ichi/react-llm-markdown/main/assets/android-light.png" width="240">
+  </picture>
+  <br>
+  <sub>Web · iPhone (iOS 18 simulator) · Android 14 emulator — taken by the end-to-end tests</sub>
 </p>
 
 ## Why
@@ -106,6 +115,7 @@ npx react-llm-markdown README.md
 
 | | |
 |---|---|
+| [Comparison](https://mickey-ichi.github.io/react-llm-markdown/docs/comparison/) | Next to react-markdown, Streamdown and the React Native renderers |
 | [Getting started](https://mickey-ichi.github.io/react-llm-markdown/docs/getting-started/) | Install, streaming an answer |
 | [Web renderer](https://mickey-ichi.github.io/react-llm-markdown/docs/web/) | Props, images, theming, element overrides, SSR |
 | [React Native renderer](https://mickey-ichi.github.io/react-llm-markdown/docs/react-native/) | Props, WebView blocks, highlighting, links, self-hosting |
@@ -123,6 +133,7 @@ npx react-llm-markdown README.md
 | Frameworks | Next.js (App Router and Pages), Vite, Remix, any React setup |
 | TypeScript | Types included; `bundler`, `node16` and `node10` resolution |
 | Node.js (CLI) | 20 and later |
+| Tested on | Chromium (web and React Native Web), [an iOS 18 simulator and an Android 14 emulator](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/native-device.yml) on every change |
 
 ## Security
 

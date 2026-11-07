@@ -1,0 +1,15 @@
+# The Copy button on a code block hands the code to onCopyCode.
+appId: dev.reactllmmarkdown.e2e
+name: Copy code
+---
+- runFlow: common/launch.yaml
+- scrollUntilVisible:
+    element: Copy code
+- tapOn: Copy code
+- scrollUntilVisible:
+    element:
+      id: events
+    direction: UP
+- assertVisible:
+    id: events
+    text: '(?s).*copied:export function hello.*'

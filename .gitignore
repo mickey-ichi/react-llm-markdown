@@ -26,3 +26,5 @@ examples/nextjs/.next/
 examples/nextjs/next-env.d.ts
 examples/react-native/.expo/
 examples/react-native/dist/
+e2e-app/ios/
+e2e-app/android/
