@@ -15,7 +15,9 @@ function scrollToAnchorInView(event: MouseEvent<HTMLAnchorElement>, href: string
   const target = view?.querySelector(`[id="${CSS.escape(id)}"]`);
   if (!target) return;
   event.preventDefault();
-  target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Respect "reduce motion": jump instead of animating.
+  const reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  target.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
 }
 
 /**
