@@ -7,7 +7,7 @@ import { extname, join } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 const SITE = join(import.meta.dirname, '..', 'site-dist');
-const TYPES: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2' };
+const TYPES: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.png': 'image/png' };
 let server: Server;
 let base: string;
 
@@ -15,7 +15,8 @@ test.beforeAll(async () => {
   if (!existsSync(join(SITE, 'index.html'))) throw new Error('site-dist is missing: run `node scripts/build-site.mjs`');
   server = createServer((req, res) => {
     const path = new URL(req.url ?? '/', 'http://x').pathname;
-    const file = join(SITE, path === '/' ? 'index.html' : path);
+    let file = join(SITE, path);
+    if (path.endsWith('/')) file = join(file, 'index.html');
     if (!file.startsWith(SITE) || !existsSync(file)) return res.writeHead(404).end();
     res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
     res.end(readFileSync(file));
@@ -103,4 +104,60 @@ test('on a phone: no sideways scroll, sticky pane tabs, React Native without a d
   const top = await page.getByRole('tablist').evaluate((el) => el.getBoundingClientRect().top);
   expect(top).toBeLessThanOrEqual(1);
   await context.close();
+});
+
+const DOC_SLUGS = ['introduction', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'security', 'performance', 'test-report', 'changelog'];
+
+test.describe('documentation', () => {
+  test('every page renders, its table of contents matches its headings, and its links lead somewhere', async ({ page, request }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    for (const slug of DOC_SLUGS) {
+      await page.goto(`${base}/docs/${slug}/`);
+      await expect(page.locator('.docs-page .rlm-markdown h1')).toBeVisible();
+      await expect(page.locator(`.docs-nav a[aria-current="page"]`)).toHaveAttribute('href', `/docs/${slug}/`);
+      for (const id of await page.locator('.docs-toc a').evaluateAll((as) => as.map((a) => a.getAttribute('href')!.slice(1)))) {
+        await expect(page.locator(`[id="${id}"]`)).toHaveCount(1);
+      }
+      const internal = await page
+        .locator('.docs-page a[href^="/"]')
+        .evaluateAll((as) => as.map((a) => a.getAttribute('href')!.split('#')[0]!));
+      for (const href of new Set(internal)) expect((await request.get(base + href)).status(), `${slug} → ${href}`).toBe(200);
+    }
+    expect(errors).toEqual([]);
+  });
+
+  test('moving between pages does not reload, and the address bar follows', async ({ page }) => {
+    await page.goto(`${base}/docs/introduction/`);
+    await page.evaluate(() => ((window as { __kept?: boolean }).__kept = true));
+    await page.locator('.docs-nav').getByRole('link', { name: 'Core API' }).click();
+    await expect(page.locator('.docs-page h1')).toHaveText(/Core API/);
+    expect(new URL(page.url()).pathname).toBe('/docs/core/');
+    await page.getByRole('link', { name: /Next/ }).click();
+    await expect(page.locator('.docs-page h1')).toHaveText(/CLI viewer/);
+    expect(await page.evaluate(() => (window as { __kept?: boolean }).__kept)).toBe(true);
+    await page.goBack();
+    await expect(page.locator('.docs-page h1')).toHaveText(/Core API/);
+  });
+
+  test('links between repo docs become site pages', async ({ page }) => {
+    await page.goto(`${base}/docs/security/`);
+    await expect(page.locator('.docs-page a', { hasText: 'test-report.md' }).first()).toHaveAttribute('href', '/docs/test-report/');
+    await expect(page.locator('.docs-page a[href*="github.com/mickey-ichi/react-llm-markdown/blob/main/src/core/security.ts"]').first()).toBeAttached();
+  });
+
+  test('on a phone: a page menu, and no page scrolls sideways', async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    const page = await context.newPage();
+    for (const slug of DOC_SLUGS) {
+      await page.goto(`${base}/docs/${slug}/`);
+      await expect(page.locator('.docs-page h1')).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), slug).toBeLessThanOrEqual(0);
+    }
+    await page.getByRole('button', { name: /Changelog/ }).click();
+    await page.locator('.docs-nav').getByRole('link', { name: 'Web renderer' }).click();
+    await expect(page.locator('.docs-page h1')).toHaveText(/Web renderer/);
+    await expect(page.locator('.docs-nav')).toBeHidden();
+    await context.close();
+  });
 });
