@@ -34,6 +34,7 @@ await build({
 
 cpSync(join(ROOT, 'site', 'index.html'), join(OUT, 'index.html'));
 cpSync(join(ROOT, 'site', 'site.css'), join(OUT, 'site.css'));
+for (const image of ['favicon-64.png', 'apple-touch-icon.png', 'icon-192.png']) cpSync(join(ROOT, 'site', image), join(OUT, image));
 cpSync(join(ROOT, 'dist', 'styles.css'), join(OUT, 'styles.css'));
 cpSync(join(ROOT, 'dist', 'fonts'), join(OUT, 'fonts'), { recursive: true });
 // GitHub Pages: serve files as they are (no Jekyll).

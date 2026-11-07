@@ -77,16 +77,11 @@ a {
   gap: 10px;
 }
 
-.brand-hash {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: var(--highlighter);
-  color: #14161b;
-  font: 700 30px/1 var(--mono);
-  transform: translateY(6px);
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 11px;
+  transform: translateY(7px);
 }
 
 .brand h1 {

@@ -146,9 +146,7 @@ function App() {
     <>
       <header className="masthead">
         <div className="brand">
-          <span aria-hidden className="brand-hash">
-            #
-          </span>
+          <img alt="" className="brand-icon" height={48} src="icon-192.png" width={48} />
           <h1>react-llm-markdown</h1>
         </div>
         <p className="thesis">
