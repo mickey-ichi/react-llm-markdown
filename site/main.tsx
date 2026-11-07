@@ -153,10 +153,12 @@ function App() {
           Markdown from your model, rendered <mark className="swipe">safely</mark> — in the browser and on the phone.
         </p>
         <nav aria-label="Project" className="links">
+          <a className="links-docs" href="docs/introduction/">
+            Docs
+          </a>
           <a href={REPO}>GitHub</a>
           <a href="https://www.npmjs.com/package/react-llm-markdown">npm</a>
-          <a href={`${REPO}/blob/main/docs/security.md`}>Security</a>
-          <a href={`${REPO}/blob/main/docs/test-report.md`}>Test report</a>
+          <a href="docs/security/">Security</a>
         </nav>
       </header>
 
@@ -275,8 +277,8 @@ function App() {
 
       <footer className="footer">
         <span>MIT license</span>
-        <a href={`${REPO}/blob/main/docs/performance.md`}>Performance</a>
-        <a href={`${REPO}#readme`}>Documentation</a>
+        <a href="docs/performance/">Performance</a>
+        <a href="docs/introduction/">Documentation</a>
         <span>Built on Streamdown, Shiki, KaTeX, Mermaid and ECharts</span>
       </footer>
     </>

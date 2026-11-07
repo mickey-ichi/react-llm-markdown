@@ -14,6 +14,8 @@
     removed.
   - React Native WebViews: the CSP allows exactly the pinned files, and no navigation except the initial document.
   - CLI viewer: requests whose `Host` is not `127.0.0.1` / `localhost` are refused (DNS rebinding).
+- Documentation site: https://mickey-ichi.github.io/react-llm-markdown/docs/ (guide, web, React Native, rich blocks,
+  core API, CLI, security, performance, test report, changelog), rendered with the library itself.
 - Fixes:
   - LaTeX delimiters: escaped brackets in prose (`\[this\]`, `arr\[0\]`) are no longer turned into math, and `~~~`
     fences, nested fences and a fence still streaming are left alone.
