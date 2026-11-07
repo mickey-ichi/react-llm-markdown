@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/mickey-ichi/react-llm-markdown/security/advisories/new
+    about: Privately, please — never in a public issue.
+  - name: Documentation
+    url: https://mickey-ichi.github.io/react-llm-markdown/docs/introduction/
+    about: Guides for the web and React Native renderers, the core API and the CLI.
+  - name: Playground
+    url: https://mickey-ichi.github.io/react-llm-markdown/
+    about: Try Markdown on both renderers, and copy a link to share it.

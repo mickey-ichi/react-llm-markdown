@@ -826,6 +826,48 @@ select {
   color: var(--graphite);
 }
 
+.live {
+  margin: 14px 0 22px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+.live-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--rlm-card);
+}
+
+.live-tabs button {
+  height: 28px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--graphite);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.live-tabs button[aria-selected='true'] {
+  background: var(--panel);
+  box-shadow: 0 0 0 1px var(--rule);
+  color: var(--ink);
+}
+
+.live-body {
+  padding: 16px 20px;
+}
+
+.live-body .rlm-markdown > div > :first-child {
+  margin-top: 0;
+}
+
 @media (max-width: 1180px) {
   .docs {
     grid-template-columns: 220px minmax(0, 1fr);

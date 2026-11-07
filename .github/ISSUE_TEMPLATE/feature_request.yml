@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest a feature or an improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: The use case, not the solution — what does your app need to show or allow?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help
+      description: An API sketch, an example Markdown input, or how another library does it.
+  - type: dropdown
+    id: renderer
+    attributes:
+      label: For
+      multiple: true
+      options:
+        - Web
+        - React Native
+        - Core
+        - CLI viewer

@@ -8,7 +8,7 @@ off with `features`, e.g. `features={{ echarts: false }}`.
 Fenced code is highlighted with Shiki (github-light / github-dark) and gets a header with the language and a copy
 button.
 
-````markdown
+````markdown live
 ```ts
 export const answer = 42;
 ```
@@ -18,11 +18,11 @@ export const answer = 42;
 
 Write math the way models do — `\( … \)` inline and `\[ … \]` for display — or with `$$`:
 
-```markdown
+````markdown live
 The area is \( A = \pi r^2 \).
 
 \[ \int_0^\infty e^{-x^2} \, dx = \frac{\sqrt{\pi}}{2} \]
-```
+````
 
 A single `$` is never math, so prices like "$5 and $10" stay text. Escaped brackets in prose (`\[this\]`) and code are
 left alone. KaTeX runs with `trust: false`: `\href`, `\includegraphics` and `\htmlClass` render as errors.
@@ -31,7 +31,7 @@ left alone. KaTeX runs with `trust: false`: `\href`, `\includegraphics` and `\ht
 
 A `mermaid` fence becomes a diagram — flowcharts, sequence, state, ER, Gantt, mind maps:
 
-````markdown
+````markdown live
 ```mermaid
 flowchart LR
   Ask --> Answer --> Render
@@ -45,7 +45,7 @@ removed, so a diagram cannot switch that off. While streaming, the diagram shows
 
 A fence tagged `echarts` (or `chart`) holding an ECharts option in JSON becomes a chart:
 
-````markdown
+````markdown live
 ```echarts
 { "xAxis": { "type": "category", "data": ["Mon", "Tue", "Wed"] },
   "yAxis": { "type": "value" },

@@ -1,0 +1,42 @@
+name: Bug report
+description: Something renders wrong, crashes or behaves unexpectedly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security problem (script runs, data leaks, a policy can be bypassed)? Please **don't** file it here — report it privately: https://github.com/mickey-ichi/react-llm-markdown/security/advisories/new
+  - type: dropdown
+    id: renderer
+    attributes:
+      label: Where
+      options:
+        - Web (react-llm-markdown)
+        - React Native (react-llm-markdown/native)
+        - Core (react-llm-markdown/core)
+        - CLI viewer
+        - Playground or docs site
+    validations:
+      required: true
+  - type: textarea
+    id: markdown
+    attributes:
+      label: Markdown that shows the problem
+      description: The smallest input you can find. A playground link ("Copy link") is perfect.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Versions
+      description: react-llm-markdown, React / React Native / Expo, browser or device, OS
+      placeholder: react-llm-markdown 0.1.1, React 19.3, Chrome 142 on macOS
+    validations:
+      required: true

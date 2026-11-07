@@ -23,6 +23,8 @@ jobs:
       - run: npm test
       - name: Package contents
         run: npm pack --dry-run
+      - name: Package checks (publint, are-the-types-wrong)
+        run: npm run lint:package
       - name: Smoke test the CLI
         run: |
           ./bin/react-llm-markdown.js --version
