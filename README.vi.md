@@ -125,6 +125,7 @@ npx react-llm-markdown README.md
 | Framework | Next.js (App Router và Pages), Vite, Remix, mọi thiết lập React |
 | TypeScript | Có sẵn type; resolution `bundler`, `node16` và `node10` |
 | Node.js (CLI) | 20 trở lên |
+| Kiểm thử trên | Chromium (web và React Native Web), [simulator iOS 18 và emulator Android 14](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/native-device.yml) ở mỗi thay đổi |
 
 ## Bảo mật
 

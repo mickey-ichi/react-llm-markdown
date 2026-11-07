@@ -124,6 +124,7 @@ npx react-llm-markdown README.md
 | Frameworks | Next.js (App Router and Pages), Vite, Remix, any React setup |
 | TypeScript | Types included; `bundler`, `node16` and `node10` resolution |
 | Node.js (CLI) | 20 and later |
+| Tested on | Chromium (web and React Native Web), [an iOS 18 simulator and an Android 14 emulator](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/native-device.yml) on every change |
 
 ## Security
 

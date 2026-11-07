@@ -125,6 +125,7 @@ npx react-llm-markdown README.md
 | フレームワーク | Next.js（App Router と Pages）、Vite、Remix、その他あらゆる React 環境 |
 | TypeScript | 型定義を同梱。`bundler`、`node16`、`node10` の解決方式に対応 |
 | Node.js（CLI） | 20 以降 |
+| テスト環境 | Chromium（Web と React Native Web）、変更ごとに [iOS 18 シミュレーターと Android 14 エミュレーター](https://github.com/mickey-ichi/react-llm-markdown/actions/workflows/native-device.yml) |
 
 ## セキュリティ
 
