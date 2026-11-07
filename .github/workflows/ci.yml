@@ -30,7 +30,7 @@ jobs:
           ./bin/react-llm-markdown.js --version
           ./bin/react-llm-markdown.js --help | head -3
 
-  # End to end in Chromium: the web viewer, the React Native renderer (Expo example app built for the web) and the
+  # End to end in Chromium: the web viewer, the React Native renderer (the Expo test app in e2e-app/, built for the web) and the
   # WebView documents (scripts from the pinned CDN, with SRI).
   e2e:
     runs-on: ubuntu-latest
@@ -46,6 +46,32 @@ jobs:
       - run: npm run e2e
         env:
           PERF_BUDGET_SCALE: 3 # shared runners are slower than the machine the budgets were set on
+
+  # The example apps build against this commit's package (packed as npm would publish it).
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm pack --pack-destination "$RUNNER_TEMP"
+      - name: Next.js
+        working-directory: examples/nextjs
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/react-llm-markdown-*.tgz
+          npx next build
+      - name: React Native (Expo)
+        working-directory: examples/react-native
+        run: |
+          npm install --no-audit --no-fund
+          npm install --no-audit --no-fund "$RUNNER_TEMP"/react-llm-markdown-*.tgz
+          npx tsc --noEmit
+          npx expo export --platform web
 
   # Tests and the CLI entry point on the other platforms.
   cross-platform:

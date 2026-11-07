@@ -46,7 +46,7 @@ ngay trong lúc stream, và vô hiệu hoá phần còn lại, trên web lẫn R
   biểu đồ ECharts từ một fence JSON, nhấn mạnh (emphasis) hiểu đúng văn bản CJK.
 - **Sẵn sàng cho streaming** — bảng, code fence và emphasis viết dở vẫn render như đã hoàn chỉnh; không còn `**` nhấp nháy.
 - **An toàn mặc định** — HTML được sanitize, allowlist cho URL, chống DOM clobbering, Mermaid và KaTeX bị khoá chặt,
-  allowlist và giới hạn cho cấu hình biểu đồ, hook allowlist cho ảnh. Đã kiểm thử với 27 payload tấn công trên trình duyệt thật.
+  allowlist và giới hạn cho cấu hình biểu đồ, hook allowlist cho ảnh. [Đã kiểm thử với 27 payload tấn công trên trình duyệt thật](https://mickey-ichi.github.io/react-llm-markdown/vi/docs/test-report/).
 - **Web và React Native** — một package, một parser và một bộ quy tắc bảo mật; view native trên điện thoại, còn
   công thức toán, sơ đồ và biểu đồ chạy trong WebView sandbox. Chạy được trong Expo Go.
 - **Dùng ngay** — CSS build sẵn, có tiền tố (không cần cài Tailwind), theme sáng và tối, server rendering, plugin được
@@ -95,6 +95,13 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 ```bash
 npx react-llm-markdown README.md
 ```
+
+### Ví dụ
+
+| | |
+|---|---|
+| [Next.js](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/nextjs) | Trang chat App Router: route handler stream câu trả lời, `MarkdownView` render nó |
+| [React Native (Expo)](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/react-native) | Một màn hình với câu trả lời được stream, khối WebView và nút Copy; chạy trong Expo Go |
 
 ## Tài liệu
 

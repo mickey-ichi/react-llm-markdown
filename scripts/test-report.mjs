@@ -59,7 +59,7 @@ out();
 out('Three targets run the same inputs:');
 out();
 out('- **Web**: `MarkdownView` from `react-llm-markdown`, in the CLI viewer (desktop Chrome viewport).');
-out('- **React Native**: `MarkdownView` from `react-llm-markdown/native`, in the [example Expo app](../example/) built for');
+out('- **React Native**: `MarkdownView` from `react-llm-markdown/native`, in the [Expo test app](../e2e-app/) built for');
 out('  the web with react-native-web (Pixel 7 viewport). `react-native-webview` has no web build, so math, Mermaid and');
 out('  ECharts show their source here.');
 out('- **WebView**: the HTML documents the React Native renderer loads into `react-native-webview` for math, Mermaid');

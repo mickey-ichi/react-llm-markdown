@@ -6,7 +6,7 @@ Trên web, `MarkdownView` được xây dựng trên [Streamdown](https://stream
 thái unified/remark với react-markdown). Bên trên đó, package này bổ sung:
 
 - gia cố bảo mật cho output không đáng tin cậy của model — Mermaid và KaTeX bị khoá chặt, allowlist kèm giới hạn cho
-  ECharts, chính sách URL chặt hơn, chống DOM clobbering, hook allowlist cho ảnh — đã kiểm thử với 27 payload tấn công;
+  ECharts, chính sách URL chặt hơn, chống DOM clobbering, hook allowlist cho ảnh — [đã kiểm thử với 27 payload tấn công](test-report);
 - biểu đồ ECharts từ một fence JSON, công thức toán `\( \)` / `\[ \]`, ngắt dòng kiểu chat;
 - CSS build sẵn, có tiền tố (không cần cài Tailwind);
 - một renderer **React Native** dùng cùng parser và chính sách, và một CLI viewer.

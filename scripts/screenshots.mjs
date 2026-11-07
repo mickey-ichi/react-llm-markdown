@@ -11,7 +11,7 @@ import { createViewerServer, resolveTarget } from '../dist/cli.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'assets');
-const APP = join(ROOT, 'example', 'dist-web');
+const APP = join(ROOT, 'e2e-app', 'dist-web');
 if (!existsSync(join(APP, 'index.html'))) throw new Error('Run `node scripts/build-example.mjs` first');
 mkdirSync(OUT, { recursive: true });
 

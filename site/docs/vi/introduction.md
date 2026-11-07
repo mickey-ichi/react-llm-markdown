@@ -15,7 +15,7 @@ này render tất cả những thứ đó và vô hiệu hoá phần còn lại.
   làm vỡ layout và `**` không bao giờ nhấp nháy trên màn hình.
 - **Xử lý sẵn thói quen của LLM**: công thức toán dạng `\( … \)` / `\[ … \]`, một lần xuống dòng là một ngắt dòng.
 - **An toàn mặc định**: HTML được sanitize, allowlist cho URL, Mermaid và KaTeX bị khoá chặt, allowlist và giới hạn cho
-  cấu hình biểu đồ — đã kiểm thử với 27 payload tấn công trên mọi renderer.
+  cấu hình biểu đồ — [đã kiểm thử với 27 payload tấn công](test-report) trên mọi renderer.
 - **Web và native trong một package**, dùng chung parser và chính sách bảo mật.
 
 ## Ba entry point

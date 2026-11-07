@@ -6,7 +6,7 @@ Web では、`MarkdownView` は [Streamdown](https://streamdown.ai) をベース
 unified/remark エコシステムの上に作られています）。このパッケージはその上に次のものを追加しています。
 
 - 信頼できないモデル出力に対する堅牢化 —— 制限をかけた Mermaid と KaTeX、上限付きの ECharts 許可リスト、より厳しい URL
-  ポリシー、DOM clobbering 対策、画像の許可リスト用フック。27 種類の攻撃ペイロードでテストしています。
+  ポリシー、DOM clobbering 対策、画像の許可リスト用フック。[27 種類の攻撃ペイロードでテストしています](test-report)。
 - JSON のフェンスから描く ECharts のチャート、`\( \)` / `\[ \]` の数式、チャット形式の改行。
 - ビルド済みでプレフィックス付きの CSS（Tailwind の設定は不要）。
 - 同じパーサーとポリシーを使う **React Native** レンダラー、そして CLI ビューアー。

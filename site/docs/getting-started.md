@@ -82,3 +82,12 @@ return <MarkdownView streaming={!done}>{text}</MarkdownView>;
 
 While streaming, an unclosed `**bold`, a half table or an open code fence render as if they were finished, and a marker
 that has no text yet (`Hello **`) is hidden until its first character arrives.
+
+## Examples
+
+Complete apps to copy from, each with its own README:
+
+- [Next.js](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/nextjs) — an App Router chat page. A route handler streams the answer; a client component reads the
+  stream and renders it with `MarkdownView`.
+- [React Native (Expo)](https://github.com/mickey-ichi/react-llm-markdown/tree/main/examples/react-native) — one screen with a streamed answer, math, a diagram and a chart in WebViews,
+  and a Copy button on code. Runs in Expo Go.

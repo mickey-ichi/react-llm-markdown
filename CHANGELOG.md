@@ -9,6 +9,10 @@
   stay in English.
 - Docs: calmer navigation (padded items, a divider, a lighter active state), list indentation tuned for reading, a
   monospace code font on every page, a sponsor link.
+- Examples: a [Next.js](examples/nextjs) App Router chat page and a [React Native (Expo)](examples/react-native) screen,
+  both streaming an answer; CI builds them against the packed package. The e2e test app moved from `example/` to
+  `e2e-app/`.
+- The "tested with 27 attack payloads" claims link to the test report.
 
 ## 0.1.1 — 2026-11-07
 
