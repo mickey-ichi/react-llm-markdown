@@ -164,6 +164,42 @@ test.describe('documentation', () => {
     expect(await (await request.get(`${base}/404.html`)).text()).toContain("This page doesn't exist");
   });
 
+  test('Vietnamese and Japanese: every page renders, links stay in the language, the switcher keeps the page', async ({ page, request }) => {
+    const errors: string[] = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    for (const locale of ['vi', 'ja']) {
+      for (const slug of DOC_SLUGS) {
+        await page.goto(`${base}/${locale}/docs/${slug}/`);
+        await expect(page.locator('.docs-page .rlm-markdown h1').first()).toBeVisible();
+        expect(await page.evaluate(() => document.documentElement.lang)).toBe(locale);
+        const internal = await page
+          .locator('.docs-page a[href^="/"], .docs-nav a')
+          .evaluateAll((as) => as.map((a) => a.getAttribute('href')!.split('#')[0]!));
+        for (const href of new Set(internal)) {
+          expect(href.startsWith(`/${locale}/`), `${locale}/${slug} → ${href}`).toBe(true);
+          expect((await request.get(base + href)).status(), `${locale}/${slug} → ${href}`).toBe(200);
+        }
+      }
+    }
+    await page.goto(`${base}/vi/docs/web/`);
+    await page.locator('.lang-switch').getByRole('link', { name: 'JA' }).click();
+    await expect(page).toHaveURL(/\/ja\/docs\/web\/$/);
+    await expect(page.locator('.docs-nav a[aria-current="page"]')).toHaveText('Web レンダラー');
+    await page.goto(`${base}/ja/docs/security/`);
+    await expect(page.locator('.docs-notice')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test('every page lists its translations, and the playground is translated', async ({ page, request }) => {
+    const html = await (await request.get(`${base}/vi/docs/core/`)).text();
+    expect(html).toContain('<html lang="vi">');
+    for (const code of ['en', 'vi', 'ja']) expect(html).toContain(`hreflang="${code}"`);
+    expect(await (await request.get(`${base}/sitemap.xml`)).text()).toContain('/ja/docs/faq/');
+    await page.goto(`${base}/vi/`);
+    await expect(page.getByRole('button', { name: 'Chạy stream' })).toBeVisible();
+    await expect(page.locator('.brand-icon')).toHaveJSProperty('naturalWidth', 192);
+  });
+
   test('links between repo docs become site pages', async ({ page }) => {
     await page.goto(`${base}/docs/security/`);
     await expect(page.locator('.docs-page a', { hasText: 'test-report.md' }).first()).toHaveAttribute('href', '/docs/test-report/');

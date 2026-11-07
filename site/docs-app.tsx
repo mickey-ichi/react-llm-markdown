@@ -1,4 +1,5 @@
-// The documentation site: Markdown pages rendered with the library's own MarkdownView.
+// The documentation site: Markdown pages rendered with the library's own MarkdownView, in English, Vietnamese and
+// Japanese (/docs/…, /vi/docs/…, /ja/docs/…).
 import { type MouseEvent, type ReactNode, StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -9,15 +10,69 @@ import performance from '../docs/performance.md';
 import security from '../docs/security.md';
 import testReport from '../docs/test-report.md';
 import cli from './docs/cli.md';
-import faq from './docs/faq.md';
 import core from './docs/core.md';
+import faq from './docs/faq.md';
 import gettingStarted from './docs/getting-started.md';
 import introduction from './docs/introduction.md';
+import jaCli from './docs/ja/cli.md';
+import jaCore from './docs/ja/core.md';
+import jaFaq from './docs/ja/faq.md';
+import jaGettingStarted from './docs/ja/getting-started.md';
+import jaIntroduction from './docs/ja/introduction.md';
+import jaReactNative from './docs/ja/react-native.md';
+import jaRichBlocks from './docs/ja/rich-blocks.md';
+import jaWeb from './docs/ja/web.md';
 import reactNative from './docs/react-native.md';
 import richBlocks from './docs/rich-blocks.md';
+import viCli from './docs/vi/cli.md';
+import viCore from './docs/vi/core.md';
+import viFaq from './docs/vi/faq.md';
+import viGettingStarted from './docs/vi/getting-started.md';
+import viIntroduction from './docs/vi/introduction.md';
+import viReactNative from './docs/vi/react-native.md';
+import viRichBlocks from './docs/vi/rich-blocks.md';
+import viWeb from './docs/vi/web.md';
 import web from './docs/web.md';
+import { type Locale, LOCALE_NAMES, LOCALE_SHORT, LOCALES, localeFromPath, PAGE_META, STRINGS } from './i18n.ts';
 
 const REPO = 'https://github.com/mickey-ichi/react-llm-markdown';
+
+/** Guide pages exist in every language; project pages are the repo's English files. */
+const GUIDE = ['introduction', 'getting-started', 'web', 'react-native', 'rich-blocks', 'core', 'cli', 'faq'] as const;
+const PROJECT = ['security', 'performance', 'test-report', 'changelog'] as const;
+const SLUGS: readonly string[] = [...GUIDE, ...PROJECT];
+type GuideSlug = (typeof GUIDE)[number];
+type ProjectSlug = (typeof PROJECT)[number];
+
+const GUIDE_CONTENT: Record<Locale, Record<GuideSlug, string>> = {
+  en: { introduction, 'getting-started': gettingStarted, web, 'react-native': reactNative, 'rich-blocks': richBlocks, core, cli, faq },
+  vi: {
+    introduction: viIntroduction,
+    'getting-started': viGettingStarted,
+    web: viWeb,
+    'react-native': viReactNative,
+    'rich-blocks': viRichBlocks,
+    core: viCore,
+    cli: viCli,
+    faq: viFaq,
+  },
+  ja: {
+    introduction: jaIntroduction,
+    'getting-started': jaGettingStarted,
+    web: jaWeb,
+    'react-native': jaReactNative,
+    'rich-blocks': jaRichBlocks,
+    core: jaCore,
+    cli: jaCli,
+    faq: jaFaq,
+  },
+};
+const PROJECT_CONTENT: Record<ProjectSlug, { markdown: string; source: string }> = {
+  security: { markdown: security, source: 'docs/security.md' },
+  performance: { markdown: performance, source: 'docs/performance.md' },
+  'test-report': { markdown: testReport, source: 'docs/test-report.md' },
+  changelog: { markdown: changelog, source: 'CHANGELOG.md' },
+};
 
 interface Page {
   slug: string;
@@ -25,51 +80,49 @@ interface Page {
   markdown: string;
   /** Where the file lives in the repo, to resolve its relative links and for "Edit this page". */
   source: string;
+  /** A project page shown in English on a translated site. */
+  englishOnly: boolean;
 }
 
-const GROUPS: { title: string; pages: Page[] }[] = [
-  {
-    title: 'Guide',
-    pages: [
-      { slug: 'introduction', title: 'Introduction', markdown: introduction, source: 'site/docs/introduction.md' },
-      { slug: 'getting-started', title: 'Getting started', markdown: gettingStarted, source: 'site/docs/getting-started.md' },
-      { slug: 'web', title: 'Web renderer', markdown: web, source: 'site/docs/web.md' },
-      { slug: 'react-native', title: 'React Native renderer', markdown: reactNative, source: 'site/docs/react-native.md' },
-      { slug: 'rich-blocks', title: 'Code, math, diagrams, charts', markdown: richBlocks, source: 'site/docs/rich-blocks.md' },
-      { slug: 'core', title: 'Core API', markdown: core, source: 'site/docs/core.md' },
-      { slug: 'cli', title: 'CLI viewer', markdown: cli, source: 'site/docs/cli.md' },
-      { slug: 'faq', title: 'FAQ', markdown: faq, source: 'site/docs/faq.md' },
-    ],
-  },
-  {
-    title: 'Project',
-    pages: [
-      { slug: 'security', title: 'Security', markdown: security, source: 'docs/security.md' },
-      { slug: 'performance', title: 'Performance', markdown: performance, source: 'docs/performance.md' },
-      { slug: 'test-report', title: 'Test report', markdown: testReport, source: 'docs/test-report.md' },
-      { slug: 'changelog', title: 'Changelog', markdown: changelog, source: 'CHANGELOG.md' },
-    ],
-  },
-];
-const PAGES = GROUPS.flatMap((group) => group.pages);
-const BY_SLUG = new Map(PAGES.map((page) => [page.slug, page]));
+function pageFor(slug: string, locale: Locale): Page {
+  const title = PAGE_META[slug]![locale][0];
+  if ((GUIDE as readonly string[]).includes(slug)) {
+    const name = slug as GuideSlug;
+    return {
+      slug,
+      title,
+      markdown: GUIDE_CONTENT[locale][name],
+      source: locale === 'en' ? `site/docs/${name}.md` : `site/docs/${locale}/${name}.md`,
+      englishOnly: false,
+    };
+  }
+  const project = PROJECT_CONTENT[slug as ProjectSlug];
+  return { slug, title, markdown: project.markdown, source: project.source, englishOnly: locale !== 'en' };
+}
+
 /** Repo files that are docs pages, so links between them stay on the site. */
-const BY_SOURCE = new Map(PAGES.map((page) => [page.source, page]));
+const BY_SOURCE = new Map<string, string>([
+  ...GUIDE.map((slug) => [`site/docs/${slug}.md`, slug] as const),
+  ...PROJECT.map((slug) => [PROJECT_CONTENT[slug].source, slug] as const),
+]);
 
 // ---------- URLs ----------
 
-/** Everything before `/docs/` (the site's base path on GitHub Pages: `/react-llm-markdown/`). */
+/** The site's base path on GitHub Pages (`/react-llm-markdown/`), without a locale. */
 function siteBase(): string {
-  const at = location.pathname.indexOf('/docs/');
-  return at >= 0 ? location.pathname.slice(0, at + 1) : location.pathname.replace(/[^/]*$/, '');
+  const path = location.pathname;
+  const at = path.indexOf('/docs/');
+  const before = at >= 0 ? path.slice(0, at + 1) : path.replace(/[^/]*$/, '');
+  return before.replace(/(?:vi|ja)\/$/, '');
 }
+
+const localePrefix = (locale: Locale) => (locale === 'en' ? '' : `${locale}/`);
+const pageUrl = (slug: string, locale: Locale) => `${siteBase()}${localePrefix(locale)}docs/${slug}/`;
 
 function slugFromPath(): string {
   const slug = /\/docs\/([^/]+)\/?$/.exec(location.pathname)?.[1];
-  return slug && BY_SLUG.has(slug) ? slug : 'introduction';
+  return slug && SLUGS.includes(slug) ? slug : 'introduction';
 }
-
-const pageUrl = (slug: string) => `${siteBase()}docs/${slug}/`;
 
 /** `a/b/../c` → `a/c` */
 function normalize(path: string): string {
@@ -83,18 +136,23 @@ function normalize(path: string): string {
 
 /**
  * Where a link in a page goes. Pages link to each other by slug (`getting-started`) or, in repo files, by path
- * (`security.md`, `../CHANGELOG.md`); both become site routes. Other relative paths go to the file on GitHub.
+ * (`security.md`, `../CHANGELOG.md`); both become site routes in the current language. Other relative paths go to the
+ * file on GitHub.
  */
-function resolveLink(href: string, page: Page): { href: string; internal: boolean } {
+function resolveLink(href: string, page: Page, locale: Locale): { href: string; internal: boolean } {
   if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//')) return { href, internal: false };
   if (href.startsWith('#')) return { href, internal: true };
   const [path = '', hash = ''] = href.split('#');
-  if (path === '../../' || path === '../..') return { href: siteBase(), internal: false };
-  if (BY_SLUG.has(path.replace(/\/$/, ''))) return { href: pageUrl(path.replace(/\/$/, '')) + (hash ? `#${hash}` : ''), internal: true };
-  const target = normalize(`${page.source.replace(/[^/]*$/, '')}${path}`);
-  const doc = BY_SOURCE.get(target);
-  if (doc) return { href: pageUrl(doc.slug) + (hash ? `#${hash}` : ''), internal: true };
-  return { href: `${REPO}/blob/main/${target}${hash ? `#${hash}` : ''}`, internal: false };
+  const anchor = hash ? `#${hash}` : '';
+  if (path === '../../' || path === '../..') return { href: siteBase() + localePrefix(locale), internal: false };
+  const bare = path.replace(/\/$/, '');
+  if (SLUGS.includes(bare)) return { href: pageUrl(bare, locale) + anchor, internal: true };
+  // Translated pages link like the English ones; resolve them against the English file.
+  const from = page.source.replace(/^site\/docs\/(?:vi|ja)\//, 'site/docs/');
+  const target = normalize(`${from.replace(/[^/]*$/, '')}${path}`);
+  const slug = BY_SOURCE.get(target);
+  if (slug) return { href: pageUrl(slug, locale) + anchor, internal: true };
+  return { href: `${REPO}/blob/main/${target}${anchor}`, internal: false };
 }
 
 // ---------- headings ----------
@@ -124,7 +182,7 @@ interface Heading {
 
 function headingsOf(markdown: string): Heading[] {
   const out: Heading[] = [];
-  const walk = (node: { type: string; depth?: number; value?: string; children?: unknown[] }): string => {
+  const walk = (node: { type: string; value?: string; children?: unknown[] }): string => {
     if (node.type === 'text' || node.type === 'inlineCode') return node.value ?? '';
     return (node.children ?? []).map((child) => walk(child as never)).join('');
   };
@@ -156,14 +214,15 @@ function chunksOf(markdown: string): Chunk[] {
   return chunks.filter((chunk) => chunk.live || chunk.markdown.trim() !== '');
 }
 
-function LiveExample({ source }: { source: string }) {
+function LiveExample({ source, locale }: { source: string; locale: Locale }) {
   const [tab, setTab] = useState<'preview' | 'markdown'>('preview');
+  const t = STRINGS[locale];
   return (
     <div className="live">
       <div aria-label="Example" className="live-tabs" role="tablist">
         {(['preview', 'markdown'] as const).map((name) => (
           <button aria-selected={tab === name} key={name} onClick={() => setTab(name)} role="tab" type="button">
-            {name === 'preview' ? 'Preview' : 'Markdown'}
+            {name === 'preview' ? t.livePreview : t.liveMarkdown}
           </button>
         ))}
       </div>
@@ -189,12 +248,22 @@ function initialDark(): boolean {
 }
 
 function Docs() {
+  const locale = useMemo(() => localeFromPath(location.pathname), []);
+  const t = STRINGS[locale];
   const [slug, setSlug] = useState(slugFromPath);
   const [dark, setDark] = useState(initialDark);
   const [menuOpen, setMenuOpen] = useState(false);
-  const page = BY_SLUG.get(slug)!;
-  const index = PAGES.indexOf(page);
+  const page = useMemo(() => pageFor(slug, locale), [slug, locale]);
+  const index = SLUGS.indexOf(slug);
   const headings = useMemo(() => headingsOf(page.markdown), [page]);
+  const groups = [
+    { title: t.guide, slugs: GUIDE as readonly string[] },
+    { title: t.project, slugs: PROJECT as readonly string[] },
+  ];
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
@@ -230,15 +299,14 @@ function Docs() {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
     const url = new URL(href, location.href);
     const target = /\/docs\/([^/]+)\/?$/.exec(url.pathname)?.[1];
-    if (!target || !BY_SLUG.has(target)) return;
+    if (!target || !SLUGS.includes(target) || localeFromPath(url.pathname) !== locale) return;
     event.preventDefault();
     setMenuOpen(false);
+    history.pushState(null, '', url.pathname + url.hash);
     if (target === slug && url.hash) {
-      history.pushState(null, '', url.pathname + url.hash);
       document.getElementById(decodeURIComponent(url.hash.slice(1)))?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    history.pushState(null, '', url.pathname + url.hash);
     setSlug(target);
   };
 
@@ -250,7 +318,7 @@ function Docs() {
         return (
           <Tag className="doc-heading" id={id}>
             {children}
-            <a aria-label="Link to this section" className="doc-anchor" href={`#${id}`}>
+            <a aria-label={t.linkToSection} className="doc-anchor" href={`#${id}`}>
               #
             </a>
           </Tag>
@@ -261,7 +329,7 @@ function Docs() {
       h3: heading('h3'),
       a: ({ href, children }: { href?: string; children?: ReactNode }) => {
         if (typeof href !== 'string' || href === '') return <span>{children}</span>;
-        const link = resolveLink(href, page);
+        const link = resolveLink(href, page, locale);
         if (link.href.startsWith('#')) {
           return (
             <a
@@ -290,25 +358,40 @@ function Docs() {
         );
       },
     };
-  }, [page, slug]);
+  }, [page, slug, locale]);
 
   const base = siteBase();
+  const prev = index > 0 ? SLUGS[index - 1]! : null;
+  const next = index < SLUGS.length - 1 ? SLUGS[index + 1]! : null;
   return (
     <>
       <header className="docs-bar">
-        <a className="docs-brand" href={base}>
+        <a className="docs-brand" href={base + localePrefix(locale)}>
           <img alt="" height={32} src={`${base}icon-192.png`} width={32} />
           <span>react-llm-markdown</span>
         </a>
         <nav aria-label="Site" className="docs-links">
-          <a href={base}>Playground</a>
-          <a aria-current="page" href={pageUrl('introduction')} onClick={(e) => go(e, pageUrl('introduction'))}>
-            Docs
+          <a href={base + localePrefix(locale)}>{t.playground}</a>
+          <a aria-current="page" href={pageUrl('introduction', locale)} onClick={(e) => go(e, pageUrl('introduction', locale))}>
+            {t.docs}
           </a>
-          <a href={REPO}>GitHub</a>
-          <a href="https://www.npmjs.com/package/react-llm-markdown">npm</a>
+          <a href={REPO}>{t.github}</a>
         </nav>
-        <button aria-label={dark ? 'Use light theme' : 'Use dark theme'} className="ghost square" onClick={() => setDark((d) => !d)} type="button">
+        <nav aria-label={t.language} className="lang-switch">
+          {LOCALES.map((code) => (
+            <a
+              aria-current={code === locale ? 'true' : undefined}
+              href={pageUrl(slug, code)}
+              hrefLang={code}
+              key={code}
+              lang={code}
+              title={LOCALE_NAMES[code]}
+            >
+              {LOCALE_SHORT[code]}
+            </a>
+          ))}
+        </nav>
+        <button aria-label={dark ? t.lightTheme : t.darkTheme} className="ghost square" onClick={() => setDark((d) => !d)} type="button">
           {dark ? '☀' : '☾'}
         </button>
       </header>
@@ -318,14 +401,14 @@ function Docs() {
           <span aria-hidden>{menuOpen ? '✕' : '☰'}</span> {page.title}
         </button>
         <nav aria-label="Documentation" className={`docs-nav ${menuOpen ? 'is-open' : ''}`}>
-          {GROUPS.map((group) => (
+          {groups.map((group) => (
             <div key={group.title}>
               <p className="docs-nav-title">{group.title}</p>
               <ul>
-                {group.pages.map((p) => (
-                  <li key={p.slug}>
-                    <a aria-current={p.slug === slug ? 'page' : undefined} href={pageUrl(p.slug)} onClick={(e) => go(e, pageUrl(p.slug))}>
-                      {p.title}
+                {group.slugs.map((s) => (
+                  <li key={s}>
+                    <a aria-current={s === slug ? 'page' : undefined} href={pageUrl(s, locale)} onClick={(e) => go(e, pageUrl(s, locale))}>
+                      {PAGE_META[s]![locale][0]}
                     </a>
                   </li>
                 ))}
@@ -335,9 +418,10 @@ function Docs() {
         </nav>
 
         <article className="docs-page">
+          {page.englishOnly ? <p className="docs-notice">{t.englishOnly}</p> : null}
           {chunksOf(page.markdown).map((chunk, i) =>
             chunk.live ? (
-              <LiveExample key={`${slug}-${i}`} source={chunk.source} />
+              <LiveExample key={`${slug}-${i}`} locale={locale} source={chunk.source} />
             ) : (
               <MarkdownView
                 codeBlockMaxHeight={0}
@@ -352,32 +436,36 @@ function Docs() {
             ),
           )}
           <footer className="docs-pager">
-            {index > 0 ? (
-              <a href={pageUrl(PAGES[index - 1]!.slug)} onClick={(e) => go(e, pageUrl(PAGES[index - 1]!.slug))}>
-                <small>Previous</small>
-                {PAGES[index - 1]!.title}
+            {prev ? (
+              <a href={pageUrl(prev, locale)} onClick={(e) => go(e, pageUrl(prev, locale))}>
+                <small>{t.previous}</small>
+                {PAGE_META[prev]![locale][0]}
               </a>
             ) : (
               <span />
             )}
-            {index < PAGES.length - 1 ? (
-              <a className="next" href={pageUrl(PAGES[index + 1]!.slug)} onClick={(e) => go(e, pageUrl(PAGES[index + 1]!.slug))}>
-                <small>Next</small>
-                {PAGES[index + 1]!.title}
+            {next ? (
+              <a className="next" href={pageUrl(next, locale)} onClick={(e) => go(e, pageUrl(next, locale))}>
+                <small>{t.next}</small>
+                {PAGE_META[next]![locale][0]}
               </a>
             ) : null}
           </footer>
           <p className="docs-edit">
             <a href={`${REPO}/edit/main/${page.source}`} rel="noopener noreferrer" target="_blank">
-              Edit this page on GitHub
+              {t.editPage}
+            </a>
+            {' · '}
+            <a href="https://github.com/sponsors/mickey-ichi" rel="noopener noreferrer" target="_blank">
+              ♥ {t.sponsor}
             </a>
           </p>
         </article>
 
-        <aside aria-label="On this page" className="docs-toc">
+        <aside aria-label={t.onThisPage} className="docs-toc">
           {headings.length > 0 ? (
             <>
-              <p className="docs-nav-title">On this page</p>
+              <p className="docs-nav-title">{t.onThisPage}</p>
               <ul>
                 {headings.map((h) => (
                   <li className={h.depth === 3 ? 'sub' : undefined} key={h.id}>

@@ -647,8 +647,8 @@ select {
 
 .docs {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 220px;
-  gap: 48px;
+  grid-template-columns: 248px minmax(0, 1fr) 210px;
+  gap: 56px;
   max-width: 1360px;
   margin: 0 auto;
   padding: 0 24px;
@@ -656,6 +656,11 @@ select {
 
 .docs-menu-button {
   display: none;
+}
+
+.docs-nav {
+  border-right: 1px solid var(--rule);
+  padding-right: 16px !important;
 }
 
 .docs-nav,
@@ -685,23 +690,32 @@ select {
 
 .docs-nav a {
   display: block;
-  margin-left: -10px;
-  padding: 6px 10px;
-  border-radius: 7px;
+  padding: 6px 12px;
+  border-radius: 8px;
   color: var(--graphite);
   font-size: 14.5px;
+  line-height: 1.35;
   text-decoration: none;
+  transition: background-color 120ms, color 120ms;
 }
 
 .docs-nav a:hover {
   color: var(--ink);
-  background: var(--panel);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 .docs-nav a[aria-current='page'] {
-  background: var(--highlighter);
-  color: #14161b;
+  background: color-mix(in srgb, var(--highlighter) 55%, transparent);
+  color: var(--ink);
   font-weight: 600;
+}
+
+:root.dark .docs-nav a[aria-current='page'] {
+  background: color-mix(in srgb, var(--highlighter) 22%, transparent);
+}
+
+.docs-nav-title {
+  padding-left: 12px;
 }
 
 .docs-toc a {
@@ -772,6 +786,60 @@ select {
 .docs-page .rlm-markdown p,
 .docs-page .rlm-markdown li {
   max-width: 76ch;
+}
+
+.docs-page .rlm-markdown :is(ul, ol) {
+  margin: 10px 0 14px;
+  padding-left: 1.4em;
+  list-style-position: outside;
+}
+
+.docs-page .rlm-markdown li {
+  margin: 4px 0;
+  padding-left: 0.2em;
+}
+
+.docs-page .rlm-markdown li > p {
+  margin: 0;
+}
+
+.docs-notice {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--highlighter);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--graphite);
+  font-size: 14px;
+}
+
+.lang-switch {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--panel);
+}
+
+.lang-switch a {
+  padding: 3px 9px;
+  border: 0 !important;
+  border-radius: 999px;
+  color: var(--graphite);
+  font: 600 12px/1.4 var(--body);
+  text-decoration: none;
+}
+
+.lang-switch a[aria-current='true'] {
+  background: var(--ink);
+  color: var(--fog);
+}
+
+.docs-page .rlm-markdown :is(pre, code),
+.live .rlm-markdown :is(pre, code),
+.install .rlm-markdown :is(pre, code) {
+  font-family: var(--mono);
 }
 
 .docs-page .rlm-markdown :not(pre) > code {
@@ -889,7 +957,10 @@ select {
   }
 
   .docs-links {
-    gap: 14px;
+    display: none;
+  }
+
+  .docs-bar .lang-switch {
     margin-left: auto;
   }
 
@@ -920,6 +991,7 @@ select {
   }
 
   .docs-nav {
+    border-right: 0;
     position: fixed;
     z-index: 19;
     inset: 106px 0 0;

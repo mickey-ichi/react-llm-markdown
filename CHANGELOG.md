@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- README rewritten (overview, quick start, docs map, compatibility, support) and translated: [Tiếng Việt](README.vi.md),
+  [日本語](README.ja.md).
+- Docs and playground in English, Vietnamese and Japanese (`/vi/`, `/ja/`), with a language switch, `hreflang`
+  alternates and localized titles and descriptions; project pages (security, performance, test report, changelog)
+  stay in English.
+- Docs: calmer navigation (padded items, a divider, a lighter active state), list indentation tuned for reading, a
+  monospace code font on every page, a sponsor link.
+
 ## 0.1.1 — 2026-11-07
 
 - React Native: math renders with KaTeX 0.19.1 (fixes [GHSA-238p-pmpm-9mq7](https://github.com/advisories/GHSA-238p-pmpm-9mq7)),
