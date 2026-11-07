@@ -3,7 +3,7 @@
 // stubbed to record what the page reports back.
 import { expect, type Page, test } from '@playwright/test';
 
-import { echartsHtml, mathHtml, MERMAID_SCRIPT, mermaidHtml } from '../dist/native/webview-html.js';
+import { echartsHtml, KATEX_STYLESHEET, mathHtml, MERMAID_SCRIPT, mermaidHtml } from '../dist/native/webview-html.js';
 import { DARK_THEME, LIGHT_THEME } from '../dist/native/theme.js';
 import { SECURITY_CASES } from './cases.ts';
 
@@ -77,13 +77,22 @@ test('ECharts draws the chart at the theme height, without HTML from the option'
   expect(errors).toEqual([]);
 });
 
-test('display math renders as MathML and \\href stays inert', async ({ page }) => {
+test('display math renders with KaTeX and \\href stays inert', async ({ page }) => {
   const { heights } = await load(page, mathHtml('x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}', LIGHT_THEME));
-  await expect(page.locator('math mfrac').first()).toBeAttached();
+  await expect(page.locator('html')).toHaveClass(/css-ok/, { timeout: 20_000 });
+  await expect(page.locator('.katex-html')).toBeVisible();
   await expect.poll(async () => Math.max(0, ...(await heights()))).toBeGreaterThan(20);
 
-  await load(page, mathHtml("\\href{javascript:window.__pwned='katex'}{click}", LIGHT_THEME));
+  await load(page, mathHtml("\\href{javascript:window.__xss='katex'}{click}", LIGHT_THEME));
   await expect(page.locator('a')).toHaveCount(0);
+});
+
+test('math falls back to MathML when the KaTeX stylesheet cannot load', async ({ page }) => {
+  const broken = { ...KATEX_STYLESHEET, integrity: 'sha384-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' };
+  await load(page, mathHtml('E = mc^2', DARK_THEME, broken));
+  await expect(page.locator('html')).toHaveClass(/css-failed/, { timeout: 20_000 });
+  await expect(page.locator('.katex-html')).toBeHidden();
+  await expect(page.locator('math')).toBeVisible();
 });
 
 test('the CSP blocks scripts from any other origin', async ({ page }) => {

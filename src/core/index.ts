@@ -20,6 +20,6 @@ export {
   restrictEChartsOption,
   sanitizeEChartsOption,
 } from './echarts-security.ts';
-export { applyChartTextTheme } from './echarts-theme.ts';
+export { applyChartTextTheme, applyLargeDataDefaults, LARGE_SERIES_THRESHOLD } from './echarts-theme.ts';
 export { normalizeLatexDelimiters } from './latex.ts';
 export { remarkSoftBreaks } from './soft-breaks.ts';

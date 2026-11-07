@@ -110,8 +110,9 @@ Works in Expo (Go and dev builds) and bare React Native: plain JavaScript, no na
 - Drawn with native views: headings, paragraphs, emphasis, links, images, lists and task lists, quotes, tables
   (horizontal scroll), footnotes, inline code and code blocks highlighted with Shiki (JavaScript regex engine, no
   WebAssembly; bundled grammars: JS/TS/JSX/TSX, JSON, shell, Python, HTML, CSS, SQL, YAML, diff).
-- In a WebView, when you pass `webView`: display math (KaTeX → MathML, works offline), Mermaid and ECharts (loaded from a
-  pinned jsDelivr URL with Subresource Integrity — set `scripts` to self-host). Without `webView`, those blocks show their
+- In a WebView, when you pass `webView`: display math (KaTeX, with its stylesheet and fonts; offline it falls back to
+  MathML), Mermaid and ECharts. Scripts and the stylesheet load from pinned jsDelivr URLs with Subresource Integrity —
+  set `scripts` to self-host. Without `webView`, those blocks show their
   source. Inline math shows its source.
 - Raw HTML is never rendered as HTML; only its text is shown (`<mark>`, `<sub>`, `<sup>`, `<br>` are honored).
 
@@ -128,7 +129,7 @@ Works in Expo (Go and dev builds) and bare React Native: plain JavaScript, no na
 | `onLinkPress` | — | Called with the URL; return `false` to stop opening it in the browser. |
 | `onCopyCode` | — | Shows a Copy button on code blocks. |
 | `highlighter` | Shiki | A custom `(code, lang, scheme) => lines` or `false`. `createCodeHighlighter([...grammars])` adds languages from `@shikijs/langs`. |
-| `scripts` | jsDelivr | `{ mermaid, echarts }`: `{ url, integrity }` of the scripts the WebViews load. |
+| `scripts` | jsDelivr | `{ mermaid, echarts, katex }`: `{ url, integrity }` of what the WebViews load. |
 
 ### Charts
 

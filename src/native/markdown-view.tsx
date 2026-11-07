@@ -53,8 +53,11 @@ export interface MarkdownViewProps {
    * those blocks show their source.
    */
   webView?: WebViewComponent;
-  /** Scripts loaded into the Mermaid / ECharts WebViews (default: pinned jsDelivr URLs with SRI). */
-  scripts?: { mermaid?: ScriptSource; echarts?: ScriptSource };
+  /**
+   * What the WebViews load (default: pinned jsDelivr URLs with SRI): the Mermaid and ECharts scripts, and KaTeX's
+   * stylesheet for math (offline, math falls back to MathML).
+   */
+  scripts?: { mermaid?: ScriptSource; echarts?: ScriptSource; katex?: ScriptSource };
   /** Light or dark. Default: the device setting. */
   colorScheme?: ColorScheme;
   /** Override theme colors and sizes. */
@@ -432,7 +435,7 @@ function renderBlock(node: RootContent, ctx: Context, index: number, tight = fal
       if (props.webView && props.features?.math !== false) {
         let html: string | null = null;
         try {
-          html = mathHtml(node.value, theme);
+          html = mathHtml(node.value, theme, props.scripts?.katex);
         } catch {
           html = null;
         }
