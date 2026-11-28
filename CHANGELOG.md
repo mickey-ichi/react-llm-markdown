@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.2.0 — 2026-11-28
+
+Smaller, simpler to install, and fixed for Streamdown 2.8.
+
+- **One install command:** `npm install react-llm-markdown`. Streamdown, its code / math / Mermaid / CJK plugins and
+  ECharts are now regular dependencies instead of peers you had to list yourself. Nothing changes in your code; if you
+  installed them by hand you can remove them from your `package.json`.
+- **Loads only what a message uses:** the web renderer fetches Shiki, KaTeX, Mermaid, ECharts and the CJK plugin the
+  first time the text contains a code fence, `$$`, a `mermaid` fence, a chart or CJK text. A plain answer downloads
+  none of them (before, every view loaded all enabled plugins on mount). `features` still turns one off entirely.
+- **16 MB → 0.5 MB package:** the `.md` viewer CLI moved to its own package,
+  [`react-llm-markdown-viewer`](packages/viewer) (`npx react-llm-markdown-viewer README.md`).
+  `npx react-llm-markdown README.md` still works and forwards to it.
+- **Fix:** with Streamdown 2.8, footnote ids were prefixed twice (`user-content-user-content-fnref-1`), so footnote
+  links and back-links went nowhere. The sanitizer's own prefix is now always off; the URL policy adds it once.
+- README: a Vercel AI SDK (`useChat`) example and a generic streaming example; keywords for npm search.
+
 ## 0.1.2 — 2026-11-07
 
 Documentation and testing; the library code is unchanged from 0.1.1.

@@ -92,4 +92,18 @@ const notices = [...bundled].sort().map((pkgDir) => {
 });
 writeFileSync(join(DIST, 'viewer', 'THIRD_PARTY_LICENSES.txt'), `${[...new Set(notices)].join(`\n\n${'-'.repeat(72)}\n\n`)}\n`);
 
+// 5. The viewer's own package (react-llm-markdown-viewer): the CLI, the browser app, styles and fonts, same version.
+const VIEWER_PKG = join(ROOT, 'packages', 'viewer');
+const viewerDist = join(VIEWER_PKG, 'dist');
+rmSync(viewerDist, { recursive: true, force: true });
+mkdirSync(viewerDist, { recursive: true });
+for (const entry of ['cli.js', 'cli.d.ts', 'viewer', 'styles.css', 'fonts']) cpSync(join(DIST, entry), join(viewerDist, entry), { recursive: true });
+cpSync(join(ROOT, 'LICENSE'), join(VIEWER_PKG, 'LICENSE'));
+const viewerManifest = JSON.parse(readFileSync(join(VIEWER_PKG, 'package.json'), 'utf8'));
+const { version } = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+if (viewerManifest.version !== version) {
+  viewerManifest.version = version;
+  writeFileSync(join(VIEWER_PKG, 'package.json'), `${JSON.stringify(viewerManifest, null, 2)}\n`);
+}
+
 console.log(`built dist/ (${tokens.size} Tailwind candidates, ${(css.length / 1024).toFixed(0)} KB css)`);

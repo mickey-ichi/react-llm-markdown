@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { type Components, defaultRehypePlugins, defaultRemarkPlugins, type PluginConfig, Streamdown } from 'streamdown';
 
 import { imageWithPolicy, ROOT_CLASS, SAFE_COMPONENTS } from './components.tsx';
-import { featureKey, getCachedMarkdownPlugins, loadMarkdownPlugins, type MarkdownFeatures } from './plugins.ts';
+import { getCachedMarkdownPlugins, loadMarkdownPlugins, type MarkdownFeatures, neededFeatureKey } from './plugins.ts';
 import type { PluggableList } from 'unified';
 
 import { prepareMarkdown } from '../core/parse.ts';
@@ -23,8 +23,11 @@ const REMARK_WITH_SOFT_BREAKS = [...DEFAULT_REMARK, remarkSoftBreaks];
  * `allowedTags`), then the URL policy runs in place of rehype-harden (see rehype-url-policy.ts).
  */
 const [rehypeSanitize, baseSchema] = defaultRehypePlugins.sanitize as [unknown, { tagNames?: string[]; attributes?: Record<string, unknown> }];
+// clobberPrefix '' : rehypeUrlPolicy adds `user-content-` once, whatever this Streamdown version does (2.8 turned the
+// sanitizer's own prefix back on, which doubled footnote ids to `user-content-user-content-fnref-1`).
 const SANITIZE_SCHEMA = {
   ...baseSchema,
+  clobberPrefix: '',
   tagNames: [...(baseSchema.tagNames ?? []), ...Object.keys(ALLOWED_HTML_TAGS)],
   attributes: { ...baseSchema.attributes, ...ALLOWED_HTML_TAGS },
 };
@@ -41,7 +44,10 @@ export interface MarkdownViewProps {
    * Default `false`.
    */
   streaming?: boolean;
-  /** Turn rich blocks off to skip loading them. All on by default. */
+  /**
+   * Turn rich blocks off to never load them. All on by default; each one is fetched only once the text contains it
+   * (a code fence, `$$`, a ```mermaid or ```echarts fence, CJK text).
+   */
   features?: MarkdownFeatures;
   /** Render a single newline as a line break, like a chat message. Default `true`. */
   softBreaks?: boolean;
@@ -79,15 +85,20 @@ export function MarkdownView({
   lineNumbers = true,
   isImageAllowed,
 }: MarkdownViewProps) {
-  const key = featureKey(features);
+  // Streamdown repairs incomplete Markdown itself (parseIncompleteMarkdown), so no `streaming` here.
+  const content = useMemo(() => prepareMarkdown(children), [children]);
+  // Only the blocks this text uses are fetched; while it streams, the set only grows.
+  const key = neededFeatureKey(content, features);
   const [loaded, setLoaded] = useState<{ key: string; plugins: PluginConfig } | undefined>(() => {
     const plugins = getCachedMarkdownPlugins(key);
     return plugins ? { key, plugins } : undefined;
   });
-  const plugins = loaded?.key === key ? loaded.plugins : getCachedMarkdownPlugins(key);
+  const ready = loaded?.key === key ? loaded.plugins : getCachedMarkdownPlugins(key);
+  // While a newly needed plugin loads, keep rendering with the ones already loaded (no flash of plain Markdown).
+  const plugins = ready ?? loaded?.plugins;
 
   useEffect(() => {
-    if (plugins) return;
+    if (ready) return;
     let active = true;
     void loadMarkdownPlugins(key).then((next) => {
       if (active) setLoaded({ key, plugins: next });
@@ -95,10 +106,8 @@ export function MarkdownView({
     return () => {
       active = false;
     };
-  }, [key, plugins]);
+  }, [key, ready]);
 
-  // Streamdown repairs incomplete Markdown itself (parseIncompleteMarkdown), so no `streaming` here.
-  const content = useMemo(() => prepareMarkdown(children), [children]);
   const mergedComponents = useMemo(() => {
     const base = isImageAllowed ? { ...SAFE_COMPONENTS, img: imageWithPolicy(isImageAllowed) } : SAFE_COMPONENTS;
     return components ? { ...base, ...components } : base;

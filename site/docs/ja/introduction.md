@@ -31,7 +31,7 @@ React Native では、`import … from 'react-llm-markdown'` は自動的にネ�
 任意の `.md` ファイルをブラウザで開き、ライブリロードで表示する CLI もあります。
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ## 次のステップ

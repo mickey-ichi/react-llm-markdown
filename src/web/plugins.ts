@@ -25,6 +25,25 @@ export function featureKey(features: MarkdownFeatures = {}): string {
   return FEATURE_NAMES.filter((name) => features[name] !== false).join(',');
 }
 
+// A fence opener at the start of a line, after indentation, `>` quotes or list markers.
+const FENCE = String.raw`(?:^|\n)[ \t>*+\-\d.)]*(?:` + '`{3,}|~{3,})[ \\t]*';
+/** What the text needs, so a plain chat answer never downloads Mermaid, KaTeX or Shiki. */
+const NEEDS: Record<FeatureName, RegExp> = {
+  code: new RegExp(FENCE),
+  math: /\$\$|\\\(|\\\[/,
+  mermaid: new RegExp(FENCE + 'mermaid\\b', 'i'),
+  echarts: new RegExp(FENCE + '(?:echarts|chart)\\b', 'i'),
+  cjk: /[぀-ヿ㐀-鿿가-힯＀-￯]/,
+};
+
+/**
+ * The features that are on *and* that `markdown` uses, as a cache key. While text streams in the key only grows,
+ * so each plugin is fetched the first time its block appears.
+ */
+export function neededFeatureKey(markdown: string, features: MarkdownFeatures = {}): string {
+  return FEATURE_NAMES.filter((name) => features[name] !== false && NEEDS[name].test(markdown)).join(',');
+}
+
 const cache = new Map<string, PluginConfig>();
 const loading = new Map<string, Promise<PluginConfig>>();
 
@@ -42,7 +61,7 @@ export function loadMarkdownPlugins(key: string): Promise<PluginConfig> {
   if (cached) return Promise.resolve(cached);
   let pending = loading.get(key);
   if (!pending) {
-    pending = loadPlugins(new Set(key.split(','))).then((plugins) => {
+    pending = loadPlugins(new Set(key.split(',').filter(Boolean))).then((plugins) => {
       cache.set(key, plugins);
       return plugins;
     });

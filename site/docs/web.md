@@ -16,7 +16,7 @@ demand, so the first paint stays light. Works with React 18 and 19.
 |---|---|---|
 | `children` | — | The Markdown source. |
 | `streaming` | `false` | `true` while text is still arriving: repairs incomplete Markdown and fades new words in. |
-| `features` | all on | `{ code, math, mermaid, echarts, cjk }` — set one to `false` to never load it. |
+| `features` | all on | `{ code, math, mermaid, echarts, cjk }`. Each is loaded only once the text contains it; `false` never loads it. |
 | `softBreaks` | `true` | A single newline becomes a line break, as in chat. `false` for standard Markdown. |
 | `isImageAllowed` | all | `(url) => boolean`. A refused image shows its alt text and is never requested. |
 | `className` | — | Extra class on the wrapper `<div class="rlm-markdown">`. |
@@ -25,8 +25,8 @@ demand, so the first paint stays light. Works with React 18 and 19.
 | `codeBlockMaxHeight` | `400` | Code blocks taller than this scroll inside (`0` = no limit). |
 | `lineNumbers` | `true` | Line numbers in code blocks. |
 
-Install every peer listed in [Getting started](getting-started) even if you turn a feature off: bundlers resolve the
-on-demand imports at build time.
+A plain chat answer loads none of the rich-block libraries: Shiki arrives with the first code fence, KaTeX with the
+first `$$`, Mermaid with the first ```` ```mermaid ```` fence, ECharts with the first chart.
 
 ## Restricting images
 

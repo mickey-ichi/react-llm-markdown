@@ -1,7 +1,7 @@
 # CLI ビューアー
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 Markdown ファイルを Web レンダラーでレンダリングしてブラウザで開き、保存するたびに再読み込みします。ディスクに保存したモデルの出力を読んだり、
@@ -10,7 +10,7 @@ Markdown ファイルを Web レンダラーでレンダリングしてブラウ
 ## 使い方
 
 ```bash
-react-llm-markdown [file.md | folder] [options]
+react-llm-markdown-viewer [file.md | folder] [options]
 ```
 
 | | |
@@ -32,4 +32,5 @@ react-llm-markdown [file.md | folder] [options]
 - ドキュメントのフォルダー内のファイルのみを配信します。`..`、フォルダー外を指すシンボリックリンク、`.env` のようなドットファイルは決して配信しません。
 - ライブラリと同じサニタイザーでレンダリングするため、ファイル内の HTML やリンクがスクリプトを実行することはできません。
 
-Node.js 20 以降が必要です。CLI はオプションの peer を一切必要としないため、`npx` だけで十分です。
+Node.js 20 以降が必要です。ビューアーは実行時の依存がない独立したパッケージなので、`npx` だけで十分です。従来の
+`npx react-llm-markdown README.md` も引き続き使え、ビューアーに転送されます。

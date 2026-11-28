@@ -59,14 +59,14 @@ the rich blocks models use, repairs Markdown as it streams, and neutralizes the 
   math, diagrams and charts in a sandboxed WebView. Works in Expo Go.
 - **Drop-in** — prebuilt, prefixed CSS (no Tailwind setup), light and dark themes, server rendering, plugins loaded on
   demand.
-- **CLI** — `npx react-llm-markdown README.md` opens any Markdown file in the browser with live reload.
+- **CLI** — `npx react-llm-markdown-viewer README.md` opens any Markdown file in the browser with live reload.
 
 ## Quick start
 
 ### Web (React, Next.js, Vite)
 
 ```bash
-npm install react-llm-markdown streamdown @streamdown/code @streamdown/math @streamdown/mermaid @streamdown/cjk echarts
+npm install react-llm-markdown
 ```
 
 ```tsx
@@ -74,6 +74,42 @@ import { MarkdownView } from 'react-llm-markdown';
 import 'react-llm-markdown/styles.css';
 
 export function Answer({ text, done }: { text: string; done: boolean }) {
+  return <MarkdownView streaming={!done}>{text}</MarkdownView>;
+}
+```
+
+### With the Vercel AI SDK or any streaming API
+
+Pass the text you have so far, and `streaming` while it is still arriving:
+
+```tsx
+'use client';
+import { useChat } from '@ai-sdk/react';
+import { MarkdownView } from 'react-llm-markdown';
+import 'react-llm-markdown/styles.css';
+
+export function Chat() {
+  const { messages, status } = useChat();
+  return messages.map((message, i) => (
+    <MarkdownView key={message.id} streaming={status === 'streaming' && i === messages.length - 1}>
+      {message.parts.map((part) => (part.type === 'text' ? part.text : '')).join('')}
+    </MarkdownView>
+  ));
+}
+```
+
+Any other source works the same way — the text deltas of the OpenAI or Anthropic SDK, a `fetch` stream:
+
+```tsx
+function Answer({ stream }: { stream: AsyncIterable<string> }) {
+  const [text, setText] = useState('');
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    void (async () => {
+      for await (const delta of stream) setText((t) => t + delta);
+      setDone(true);
+    })();
+  }, [stream]);
   return <MarkdownView streaming={!done}>{text}</MarkdownView>;
 }
 ```
@@ -101,7 +137,7 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 ### Any Markdown file
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ### Examples
@@ -159,4 +195,4 @@ If react-llm-markdown saves you time, you can support its development through
 ## License
 
 [MIT](LICENSE) © mickey-ichi. The CLI viewer bundles third-party packages; their licenses ship in
-`dist/viewer/THIRD_PARTY_LICENSES.txt`.
+`react-llm-markdown-viewer`, `dist/viewer/THIRD_PARTY_LICENSES.txt`.

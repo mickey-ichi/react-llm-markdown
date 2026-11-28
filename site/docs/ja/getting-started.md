@@ -2,13 +2,11 @@
 
 ## Web（React、Next.js、Vite）
 
-パッケージと、Web レンダラーが使うライブラリをインストールします（これらは peer dependencies なので、React Native アプリが
-インストールすることはありません）。
+パッケージをインストールします。Streamdown・Shiki・KaTeX・Mermaid・ECharts は同梱され、メッセージにコードブロック・数式・
+図・グラフが含まれたときにだけブラウザが読み込みます。
 
 ```bash
-npm install react-llm-markdown \
-  streamdown @streamdown/code @streamdown/math \
-  @streamdown/mermaid @streamdown/cjk echarts
+npm install react-llm-markdown
 ```
 
 スタイルを一度だけインポートし、レンダリングします。
@@ -58,7 +56,7 @@ Expo Go、Expo の開発ビルド、素の React Native で動作します。純
 ## ターミナルから任意の .md ファイルを開く
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ファイルをブラウザで開き、保存するたびに再読み込みします。詳しくは [CLI ビューアー](cli) をご覧ください。

@@ -60,14 +60,14 @@ ngay trong lúc stream, và vô hiệu hoá phần còn lại, trên web lẫn R
   công thức toán, sơ đồ và biểu đồ chạy trong WebView sandbox. Chạy được trong Expo Go.
 - **Dùng ngay** — CSS build sẵn, có tiền tố (không cần cài Tailwind), theme sáng và tối, server rendering, plugin được
   tải khi cần.
-- **CLI** — `npx react-llm-markdown README.md` mở bất kỳ file Markdown nào trên trình duyệt, tự tải lại khi file thay đổi.
+- **CLI** — `npx react-llm-markdown-viewer README.md` mở bất kỳ file Markdown nào trên trình duyệt, tự tải lại khi file thay đổi.
 
 ## Bắt đầu nhanh
 
 ### Web (React, Next.js, Vite)
 
 ```bash
-npm install react-llm-markdown streamdown @streamdown/code @streamdown/math @streamdown/mermaid @streamdown/cjk echarts
+npm install react-llm-markdown
 ```
 
 ```tsx
@@ -75,6 +75,42 @@ import { MarkdownView } from 'react-llm-markdown';
 import 'react-llm-markdown/styles.css';
 
 export function Answer({ text, done }: { text: string; done: boolean }) {
+  return <MarkdownView streaming={!done}>{text}</MarkdownView>;
+}
+```
+
+### Dùng với Vercel AI SDK hoặc API streaming bất kỳ
+
+Truyền phần văn bản đã nhận được, và `streaming` trong lúc văn bản còn đang về:
+
+```tsx
+'use client';
+import { useChat } from '@ai-sdk/react';
+import { MarkdownView } from 'react-llm-markdown';
+import 'react-llm-markdown/styles.css';
+
+export function Chat() {
+  const { messages, status } = useChat();
+  return messages.map((message, i) => (
+    <MarkdownView key={message.id} streaming={status === 'streaming' && i === messages.length - 1}>
+      {message.parts.map((part) => (part.type === 'text' ? part.text : '')).join('')}
+    </MarkdownView>
+  ));
+}
+```
+
+Nguồn khác cũng làm tương tự — text delta của SDK OpenAI hay Anthropic, hoặc một luồng `fetch`:
+
+```tsx
+function Answer({ stream }: { stream: AsyncIterable<string> }) {
+  const [text, setText] = useState('');
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    void (async () => {
+      for await (const delta of stream) setText((t) => t + delta);
+      setDone(true);
+    })();
+  }, [stream]);
   return <MarkdownView streaming={!done}>{text}</MarkdownView>;
 }
 ```
@@ -102,7 +138,7 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 ### Bất kỳ file Markdown nào
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ### Ví dụ
@@ -160,4 +196,4 @@ Nếu react-llm-markdown giúp bạn tiết kiệm thời gian, bạn có thể 
 ## Giấy phép
 
 [MIT](LICENSE) © mickey-ichi. CLI viewer có đóng gói kèm các package bên thứ ba; giấy phép của chúng nằm trong
-`dist/viewer/THIRD_PARTY_LICENSES.txt`.
+`react-llm-markdown-viewer`, `dist/viewer/THIRD_PARTY_LICENSES.txt`.

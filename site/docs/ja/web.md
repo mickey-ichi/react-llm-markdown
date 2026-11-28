@@ -16,7 +16,7 @@ import 'react-llm-markdown/styles.css';
 |---|---|---|
 | `children` | — | Markdown のソース。 |
 | `streaming` | `false` | テキストがまだ届いている間は `true`：未完成の Markdown を補修し、新しい単語をフェードインさせます。 |
-| `features` | すべて有効 | `{ code, math, mermaid, echarts, cjk }` —— いずれかを `false` にすると、それは一切読み込まれません。 |
+| `features` | すべて有効 | `{ code, math, mermaid, echarts, cjk }`。テキストに現れたときにだけ読み込みます。`false` にすると一切読み込みません。 |
 | `softBreaks` | `true` | チャットと同じく、1 つの改行を改行として扱います。標準の Markdown にするには `false`。 |
 | `isImageAllowed` | すべて | `(url) => boolean`。拒否された画像は代替テキストを表示し、リクエストされることはありません。 |
 | `className` | — | ラッパー `<div class="rlm-markdown">` に追加するクラス。 |
@@ -25,8 +25,8 @@ import 'react-llm-markdown/styles.css';
 | `codeBlockMaxHeight` | `400` | これより高いコードブロックは内部でスクロールします（`0` = 上限なし）。 |
 | `lineNumbers` | `true` | コードブロックの行番号。 |
 
-機能を無効にする場合でも、[スタートガイド](getting-started) に挙げた peer をすべてインストールしてください。バンドラーは
-必要に応じて読み込むインポートをビルド時に解決します。
+テキストだけの回答では、リッチブロック用のライブラリは何も読み込みません。Shiki は最初のコードブロック、KaTeX は最初の `$$`、
+Mermaid は最初の ```` ```mermaid ```` フェンス、ECharts は最初のグラフで読み込まれます。
 
 ## 画像を制限する
 

@@ -1,7 +1,7 @@
 # CLI viewer
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 Mở một file Markdown trên trình duyệt, render bằng renderer web, và tải lại mỗi lần bạn lưu. Hữu ích để đọc output của
@@ -10,7 +10,7 @@ model đã lưu ra đĩa, hoặc tài liệu của một dự án với sơ đ�
 ## Cách dùng
 
 ```bash
-react-llm-markdown [file.md | folder] [options]
+react-llm-markdown-viewer [file.md | folder] [options]
 ```
 
 | | |
@@ -32,4 +32,5 @@ bằng nút trên thanh trên cùng.
 - Chỉ phục vụ file từ thư mục của tài liệu — không bao giờ `..`, symlink trỏ ra ngoài thư mục, hay dotfile như `.env`.
 - Render với cùng bộ sanitize như thư viện: HTML hay link trong file không thể chạy script.
 
-Yêu cầu Node.js 20 trở lên. CLI không cần peer tuỳ chọn nào: chỉ cần `npx` là đủ.
+Yêu cầu Node.js 20 trở lên. Viewer là một package riêng, không có dependency lúc chạy: chỉ cần `npx` là đủ. Lệnh cũ
+`npx react-llm-markdown README.md` vẫn chạy và chuyển tiếp sang nó.

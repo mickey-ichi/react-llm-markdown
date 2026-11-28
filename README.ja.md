@@ -60,14 +60,14 @@
   数式・ダイアグラム・チャートはサンドボックス化された WebView で描画します。Expo Go でも動作します。
 - **すぐに導入できる** —— ビルド済みでプレフィックス付きの CSS（Tailwind の設定は不要）、ライトテーマとダークテーマ、サーバーレンダリング、
   必要に応じて読み込まれるプラグイン。
-- **CLI** —— `npx react-llm-markdown README.md` で任意の Markdown ファイルをブラウザで開き、ライブリロードで表示します。
+- **CLI** —— `npx react-llm-markdown-viewer README.md` で任意の Markdown ファイルをブラウザで開き、ライブリロードで表示します。
 
 ## クイックスタート
 
 ### Web（React、Next.js、Vite）
 
 ```bash
-npm install react-llm-markdown streamdown @streamdown/code @streamdown/math @streamdown/mermaid @streamdown/cjk echarts
+npm install react-llm-markdown
 ```
 
 ```tsx
@@ -75,6 +75,42 @@ import { MarkdownView } from 'react-llm-markdown';
 import 'react-llm-markdown/styles.css';
 
 export function Answer({ text, done }: { text: string; done: boolean }) {
+  return <MarkdownView streaming={!done}>{text}</MarkdownView>;
+}
+```
+
+### Vercel AI SDK や任意のストリーミング API と使う
+
+受信済みのテキストを渡し、受信中は `streaming` を指定します。
+
+```tsx
+'use client';
+import { useChat } from '@ai-sdk/react';
+import { MarkdownView } from 'react-llm-markdown';
+import 'react-llm-markdown/styles.css';
+
+export function Chat() {
+  const { messages, status } = useChat();
+  return messages.map((message, i) => (
+    <MarkdownView key={message.id} streaming={status === 'streaming' && i === messages.length - 1}>
+      {message.parts.map((part) => (part.type === 'text' ? part.text : '')).join('')}
+    </MarkdownView>
+  ));
+}
+```
+
+ほかのソース（OpenAI や Anthropic の SDK のテキスト差分、`fetch` のストリーム）も同じです。
+
+```tsx
+function Answer({ stream }: { stream: AsyncIterable<string> }) {
+  const [text, setText] = useState('');
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    void (async () => {
+      for await (const delta of stream) setText((t) => t + delta);
+      setDone(true);
+    })();
+  }, [stream]);
   return <MarkdownView streaming={!done}>{text}</MarkdownView>;
 }
 ```
@@ -102,7 +138,7 @@ export function Answer({ text, done }: { text: string; done: boolean }) {
 ### 任意の Markdown ファイル
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ### サンプル
@@ -160,4 +196,4 @@ react-llm-markdown が時間の節約に役立っているなら、[GitHub Spons
 ## ライセンス
 
 [MIT](LICENSE) © mickey-ichi。CLI ビューアーにはサードパーティのパッケージが同梱されており、それらのライセンスは
-`dist/viewer/THIRD_PARTY_LICENSES.txt` に含まれています。
+`react-llm-markdown-viewer`, `dist/viewer/THIRD_PARTY_LICENSES.txt` に含まれています。

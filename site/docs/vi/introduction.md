@@ -31,7 +31,7 @@ Trên React Native, `import … from 'react-llm-markdown'` tự resolve sang ent
 Ngoài ra còn có một CLI mở bất kỳ file `.md` nào trên trình duyệt, tự tải lại khi file thay đổi:
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ## Tiếp theo
