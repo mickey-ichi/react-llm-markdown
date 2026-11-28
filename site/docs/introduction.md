@@ -30,7 +30,7 @@ On React Native, `import … from 'react-llm-markdown'` resolves to the native e
 There is also a CLI that opens any `.md` file in your browser with live reload:
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 ## Next

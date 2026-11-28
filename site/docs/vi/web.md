@@ -16,7 +16,7 @@ ECharts khi cần, nên lần hiển thị đầu tiên (first paint) vẫn nh�
 |---|---|---|
 | `children` | — | Mã nguồn Markdown. |
 | `streaming` | `false` | `true` trong lúc văn bản vẫn đang về: sửa Markdown chưa hoàn chỉnh và cho chữ mới hiện dần. |
-| `features` | bật hết | `{ code, math, mermaid, echarts, cjk }` — đặt một mục thành `false` để không bao giờ tải nó. |
+| `features` | bật hết | `{ code, math, mermaid, echarts, cjk }`. Mỗi mục chỉ được tải khi văn bản có nó; `false` thì không bao giờ tải. |
 | `softBreaks` | `true` | Một lần xuống dòng thành một ngắt dòng, như trong chat. `false` để theo Markdown chuẩn. |
 | `isImageAllowed` | tất cả | `(url) => boolean`. Ảnh bị từ chối sẽ hiển thị alt text và không bao giờ được request. |
 | `className` | — | Class bổ sung cho wrapper `<div class="rlm-markdown">`. |
@@ -25,8 +25,8 @@ ECharts khi cần, nên lần hiển thị đầu tiên (first paint) vẫn nh�
 | `codeBlockMaxHeight` | `400` | Khối code cao hơn giá trị này sẽ cuộn bên trong (`0` = không giới hạn). |
 | `lineNumbers` | `true` | Số dòng trong khối code. |
 
-Hãy cài mọi peer được liệt kê trong [Bắt đầu](getting-started) kể cả khi bạn tắt một tính năng: bundler resolve các
-import tải-khi-cần ngay lúc build.
+Một câu trả lời chỉ có chữ sẽ không tải thư viện khối phong phú nào: Shiki đến cùng khối code đầu tiên, KaTeX cùng `$$`
+đầu tiên, Mermaid cùng fence ```` ```mermaid ```` đầu tiên, ECharts cùng biểu đồ đầu tiên.
 
 ## Giới hạn ảnh
 

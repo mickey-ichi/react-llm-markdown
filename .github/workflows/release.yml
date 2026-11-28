@@ -42,10 +42,14 @@ jobs:
         env:
           # A GitHub pre-release goes to the `next` dist-tag.
           DIST_TAG: ${{ github.event.release.prerelease && 'next' || 'latest' }}
+        # The viewer goes first: the library's `react-llm-markdown` command forwards to the viewer of the same version.
         run: |
           version=$(node -p "require('./package.json').version")
-          if npm view "react-llm-markdown@$version" version >/dev/null 2>&1; then
-            echo "react-llm-markdown@$version is already on npm - skipping"
-          else
-            npm publish --tag "$DIST_TAG"
-          fi
+          for dir in packages/viewer .; do
+            name=$(node -p "require('./$dir/package.json').name")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already on npm - skipping"
+            else
+              (cd "$dir" && npm publish --tag "$DIST_TAG")
+            fi
+          done

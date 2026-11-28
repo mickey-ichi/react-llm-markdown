@@ -22,7 +22,7 @@ const INSTALL = [
   {
     title: t.installWeb,
     markdown: [
-      code('bash', 'npm install react-llm-markdown \\\n  streamdown @streamdown/code @streamdown/math \\\n  @streamdown/mermaid @streamdown/cjk echarts'),
+      code('bash', 'npm install react-llm-markdown'),
       code('tsx', "import { MarkdownView } from 'react-llm-markdown';\nimport 'react-llm-markdown/styles.css';\n\n<MarkdownView streaming={!done}>\n  {text}\n</MarkdownView>"),
     ].join('\n\n'),
   },

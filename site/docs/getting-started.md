@@ -2,13 +2,11 @@
 
 ## Web (React, Next.js, Vite)
 
-Install the package and the web renderer's libraries (they are peer dependencies, so a React Native app never installs
-them):
+Install the package — Streamdown, Shiki, KaTeX, Mermaid and ECharts come with it, and each is downloaded by the
+browser only when a message contains a code block, math, a diagram or a chart:
 
 ```bash
-npm install react-llm-markdown \
-  streamdown @streamdown/code @streamdown/math \
-  @streamdown/mermaid @streamdown/cjk echarts
+npm install react-llm-markdown
 ```
 
 Import the styles once, then render:
@@ -58,7 +56,7 @@ More: [React Native renderer](react-native).
 ## Any .md file, from the terminal
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 Opens the file in your browser and reloads it on every save. More: [CLI viewer](cli).

@@ -2,13 +2,11 @@
 
 ## Web (React, Next.js, Vite)
 
-Cài package và các thư viện của renderer web (chúng là peer dependency, nên app React Native sẽ không bao giờ cài
-chúng):
+Cài package — Streamdown, Shiki, KaTeX, Mermaid và ECharts đi kèm sẵn, và trình duyệt chỉ tải từng thư viện khi tin
+nhắn thực sự có khối code, công thức toán, sơ đồ hoặc biểu đồ:
 
 ```bash
-npm install react-llm-markdown \
-  streamdown @streamdown/code @streamdown/math \
-  @streamdown/mermaid @streamdown/cjk echarts
+npm install react-llm-markdown
 ```
 
 Import style một lần, rồi render:
@@ -58,7 +56,7 @@ Xem thêm: [Renderer cho React Native](react-native).
 ## Mở bất kỳ file .md nào từ terminal
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 Mở file trên trình duyệt và tải lại mỗi lần bạn lưu. Xem thêm: [CLI viewer](cli).

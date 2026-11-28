@@ -8,16 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
-    "@streamdown/cjk": "^1.0.3",
-    "@streamdown/code": "^1.1.1",
-    "@streamdown/math": "^1.0.2",
-    "@streamdown/mermaid": "^1.0.2",
-    "echarts": "^6.1.0",
     "next": "^16.4.5",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-llm-markdown": "^0.1.1",
-    "streamdown": "^2.6.0"
+    "react-llm-markdown": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -21,8 +21,8 @@ const prefixed = (value: string) => (value.startsWith(CLOBBER_PREFIX) ? value : 
  *   A relative URL is kept exactly as written — rehype-harden resolved them against a dummy origin, so `../guide.md`
  *   became `/guide.md` and a bare `guide.md` was blocked. A refused link keeps its text without an `href`; a refused
  *   image is removed (and never requested).
- * - **DOM clobbering**: `id` and `name` from the document get the `user-content-` prefix (Streamdown turns the
- *   sanitizer's prefix off), so `<div id="root">` cannot shadow `window.root` or the host page's own elements.
+ * - **DOM clobbering**: `id` and `name` from the document get the `user-content-` prefix (the sanitizer's own
+ *   prefix is turned off in markdown-view.tsx, so this is the only place that adds it), so `<div id="root">` cannot shadow `window.root` or the host page's own elements.
  *   `aria-describedby` / `aria-labelledby` are prefixed the same way so they still point at their targets.
  */
 export function rehypeUrlPolicy() {

@@ -25,10 +25,13 @@ jobs:
         run: npm pack --dry-run
       - name: Package checks (publint, are-the-types-wrong)
         run: npm run lint:package
-      - name: Smoke test the CLI
+      - name: Viewer package contents
+        working-directory: packages/viewer
+        run: npm pack --dry-run
+      - name: Smoke test the viewer CLI
         run: |
-          ./bin/react-llm-markdown.js --version
-          ./bin/react-llm-markdown.js --help | head -3
+          node packages/viewer/bin/react-llm-markdown-viewer.js --version
+          node packages/viewer/bin/react-llm-markdown-viewer.js --help | head -3
 
   # End to end in Chromium: the web viewer, the React Native renderer (the Expo test app in e2e-app/, built for the web) and the
   # WebView documents (scripts from the pinned CDN, with SRI).
@@ -62,14 +65,16 @@ jobs:
       - name: Next.js
         working-directory: examples/nextjs
         run: |
+          # The example pins the next release, which may not be on npm yet: point it at this commit's pack.
+          npm pkg set dependencies.react-llm-markdown="file:$(ls "$RUNNER_TEMP"/react-llm-markdown-*.tgz)"
           npm install --no-audit --no-fund
-          npm install --no-audit --no-fund "$RUNNER_TEMP"/react-llm-markdown-*.tgz
           npx next build
       - name: React Native (Expo)
         working-directory: examples/react-native
         run: |
+          # The example pins the next release, which may not be on npm yet: point it at this commit's pack.
+          npm pkg set dependencies.react-llm-markdown="file:$(ls "$RUNNER_TEMP"/react-llm-markdown-*.tgz)"
           npm install --no-audit --no-fund
-          npm install --no-audit --no-fund "$RUNNER_TEMP"/react-llm-markdown-*.tgz
           npx tsc --noEmit
           npx expo export --platform web
 
@@ -93,4 +98,4 @@ jobs:
       - run: npm run build
       - run: npm run typecheck
       - run: npm test
-      - run: node bin/react-llm-markdown.js --version
+      - run: node packages/viewer/bin/react-llm-markdown-viewer.js --version

@@ -1,0 +1,40 @@
+{
+  "name": "react-llm-markdown-viewer",
+  "version": "0.2.0",
+  "description": "View any Markdown file in your browser with live reload: GFM, code highlighting, math, Mermaid and ECharts, rendered safely by react-llm-markdown.",
+  "license": "MIT",
+  "homepage": "https://mickey-ichi.github.io/react-llm-markdown/docs/cli/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mickey-ichi/react-llm-markdown.git",
+    "directory": "packages/viewer"
+  },
+  "bugs": {
+    "url": "https://github.com/mickey-ichi/react-llm-markdown/issues"
+  },
+  "keywords": [
+    "markdown",
+    "viewer",
+    "preview",
+    "live-reload",
+    "cli",
+    "mermaid",
+    "katex",
+    "echarts",
+    "readme"
+  ],
+  "type": "module",
+  "bin": {
+    "react-llm-markdown-viewer": "bin/react-llm-markdown-viewer.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "!dist/**/*.tsbuildinfo",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}

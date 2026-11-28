@@ -1,7 +1,7 @@
 # CLI viewer
 
 ```bash
-npx react-llm-markdown README.md
+npx react-llm-markdown-viewer README.md
 ```
 
 Opens a Markdown file in your browser, rendered by the web renderer, and reloads it every time you save. Useful for
@@ -10,7 +10,7 @@ reading model output saved to disk, or a project's docs with its diagrams and ch
 ## Usage
 
 ```bash
-react-llm-markdown [file.md | folder] [options]
+react-llm-markdown-viewer [file.md | folder] [options]
 ```
 
 | | |
@@ -32,4 +32,5 @@ with the button in the top bar.
 - Serves files from the document's folder only — never `..`, symlinks out of it, or dotfiles such as `.env`.
 - Renders with the same sanitizer as the library: HTML or links in the file cannot run script.
 
-Requires Node.js 20 or later. The CLI needs none of the optional peers: `npx` is enough.
+Requires Node.js 20 or later. The viewer is its own package with no runtime dependencies: `npx` is enough. The older
+`npx react-llm-markdown README.md` still works and forwards to it.
